@@ -16,9 +16,9 @@ cleanupTime = 100
 
 time :: (MonadIO m, NFData a, TimeUnit t) => m a -> m (t, a)
 time f = do
-  startTime <- fmap force $ liftIO getPOSIXTime
-  value <- fmap force f
-  endTime <- fmap force $ liftIO getPOSIXTime
+  startTime <- force <$> liftIO getPOSIXTime
+  value <- force <$> f
+  endTime <- force <$> liftIO getPOSIXTime
   let elapsedTime = posixToTimeUnit $ endTime - startTime
   return (elapsedTime, value)
 
