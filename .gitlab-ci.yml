@@ -1,0 +1,26 @@
+stages:
+  - test
+
+variables:
+  STACK_ROOT: "${CI_PROJECT_DIR}/.stack"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .stack
+    - .stack-work
+
+before_script:
+  - stack config set system-ghc true
+
+test:
+  stage: test
+  image: pavelkucera/thesis:lts-13.16
+  script:
+    - stack test --color always --test-arguments=--color
+
+hlint:
+  stage: test
+  image: pavelkucera/thesis:lts-13.16
+  script:
+    - hlint src
