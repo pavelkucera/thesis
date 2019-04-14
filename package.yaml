@@ -1,0 +1,41 @@
+name: thesis
+github: pavelkucera/thesis
+author:
+  - Pavel Kucera <pave.kucera@gmail.com>
+  - Leendert Bastiaan van Doorn <xbt504@alumni.ku.dk>
+maintainer:
+  - Pavel Kucera <pave.kucera@gmail.com>
+  - Leendert Bastiaan van Doorn <xbt504@alumni.ku.dk>
+license: MIT
+
+extra-source-files:
+  - LICENSE
+  - README.md
+
+ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wredundant-constraints
+
+dependencies:
+  - base >= 4.9 && < 5
+
+library:
+  source-dirs: src
+
+tests:
+  spec:
+    source-dirs:
+      - test
+      - src
+    main: Spec.hs
+    ghc-options:
+      - -Wno-type-defaults
+      - -Wno-incomplete-uni-patterns
+    build-tools: hspec-discover
+    dependencies:
+      - hspec >= 2.6 && < 2.7
+      - hspec-discover >= 2.6 && < 2.7
+      - QuickCheck >= 2.12 && < 2.13
