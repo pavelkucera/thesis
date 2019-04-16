@@ -24,6 +24,8 @@ dependencies:
   - mtl
   - deepseq
   - exceptions
+  - postgresql-simple
+  - text
   - time
   - time-units
   - time-out
@@ -48,3 +50,4 @@ tests:
       - hspec
       - hspec-discover
       - QuickCheck
+      - quickcheck-instances

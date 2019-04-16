@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: d35ebf4f59f43a0bf15683443ffacf40d26b3de2d46cec9607b17caaebb7b41d
+-- hash: 7eb13a78fd707fdba23fe4d30ab4184b749f9c35ebdb0754458e74564418a20c
 
 name:           thesis
 version:        0.0.0
@@ -29,6 +29,7 @@ library
   exposed-modules:
     Main
     Thesis.Microtransaction
+    Thesis.SqlBuilder
   other-modules:
     Paths_thesis
   hs-source-dirs:
@@ -39,6 +40,8 @@ library
     deepseq,
     exceptions,
     mtl,
+    postgresql-simple,
+    text,
     time,
     time-out,
     time-units
@@ -49,23 +52,29 @@ test-suite spec
   main-is: Spec.hs
   other-modules:
     Thesis.MicrotransactionSpec
+    Thesis.SqlBuilderSpec
     Main
     Thesis.Microtransaction
+    Thesis.SqlBuilder
     Paths_thesis
   hs-source-dirs:
     test
     src
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -Wno-type-defaults -Wno-incomplete-uni-patterns
+  default-extensions: ScopedTypeVariables
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -Wno-type-defaults -Wno-incomplete-uni-patterns -Wno-orphans
   build-tool-depends:
     hspec-discover:hspec-discover
   build-depends:
-    QuickCheck >=2.12 && <2.13,
+    QuickCheck,
     base >=4.9 && <5,
     deepseq,
     exceptions,
-    hspec >=2.6 && <2.7,
-    hspec-discover >=2.6 && <2.7,
+    hspec,
+    hspec-discover,
     mtl,
+    postgresql-simple,
+    quickcheck-instances,
+    text,
     time,
     time-out,
     time-units
