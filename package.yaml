@@ -21,6 +21,12 @@ ghc-options:
 
 dependencies:
   - base >= 4.9 && < 5
+  - mtl
+  - deepseq
+  - exceptions
+  - time
+  - time-units
+  - time-out
 
 library:
   source-dirs: src
