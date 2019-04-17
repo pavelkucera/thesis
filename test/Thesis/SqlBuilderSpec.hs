@@ -46,6 +46,6 @@ spec =
         in emitted `shouldBe` expected
 
     prop "emits question marks corresponding to the number of parameters" $
-      \(parts :: [Either (ASCIIString) Parameter]) ->
+      \(parts :: [Either ASCIIString Parameter]) ->
         let SqlPart sql ps = mconcat $ map emitPart parts
         in countQuestionMarks sql `shouldBe` length ps
