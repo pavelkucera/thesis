@@ -4,16 +4,18 @@ module Composition where
 
 import Types
 
-class Composition a where
-  type QueryPrice a :: *
-  subtractBudget :: a -> QueryPrice a -> Either QueryError (Double, Double)
-
-data SimpleComposition =
-  SimpleComposition Epsilon Delta
+data BudgetDepleted = BudgetDepleted
   deriving (Eq, Show)
 
-instance Composition SimpleComposition where
-  type QueryPrice SimpleComposition = (Epsilon, Delta)
-  subtractBudget (SimpleComposition e _) (queryEpsilon, _) | queryEpsilon > e = Left BudgetDepleted
-  subtractBudget (SimpleComposition _ d) (_, queryDelta) | queryDelta > d = Left BudgetDepleted
-  subtractBudget (SimpleComposition e d) (queryEpsilon, queryDelta) = Right (getEpsilon e - getEpsilon queryEpsilon, getDelta d - getDelta queryDelta)
+type SimpleBudget = (Double, Double)
+
+simpleSubtractBudget :: SimpleBudget -> (Epsilon, Delta) -> Either BudgetDepleted SimpleBudget
+simpleSubtractBudget (initialEpsilon, initialDelta) (queryEpsilon, queryDelta) =
+  let newEpsilon = initialEpsilon - getEpsilon queryEpsilon
+      newDelta = initialDelta - getDelta queryDelta
+  in case (nonNegative newEpsilon, nonNegative newDelta) of
+    (True, True) -> Right (newEpsilon, newDelta)
+    _ -> Left BudgetDepleted
+   where
+    nonNegative :: Double -> Bool
+    nonNegative x = x >= 0
