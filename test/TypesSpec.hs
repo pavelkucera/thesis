@@ -8,7 +8,6 @@ import Test.QuickCheck
 spec :: Spec
 spec = describe "types" $ do
   describe "epsilon" $
-    describe "epsilon" $ do
       it "returns an Epsilon when the input is positive" $ property $
         \(Positive e) -> isRight (epsilon e)
 
@@ -16,7 +15,6 @@ spec = describe "types" $ do
         \(NonNegative e) -> (epsilon (-1 * e)) `shouldBe` Left (NonPositiveEpsilon (-1 * e))
 
   describe "delta" $
-    describe "delta" $ do
       it "returns a Delta when the input is not negative" $ property $
         \(NonNegative d) -> isRight (delta d)
 
