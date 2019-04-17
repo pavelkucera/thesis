@@ -33,8 +33,9 @@ instance Semigroup SqlPart where
 instance Monoid SqlPart where
   mempty = SqlPart mempty mempty
 
+-- expects sql not to contain any question marks
 emit :: Text -> SqlPart
-emit s = SqlPart s mempty
+emit sql = SqlPart sql mempty
 
 emitParameter :: (Eq a, Show a, ToField a, Typeable a) => a -> SqlPart
 emitParameter p = SqlPart "?" [Parameter p]

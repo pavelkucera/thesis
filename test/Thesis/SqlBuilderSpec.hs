@@ -3,28 +3,12 @@
 module Thesis.SqlBuilderSpec (spec) where
 
 import Data.Text (Text)
-import qualified Data.Text as T (concat, filter, length, pack)
+import qualified Data.Text as T (concat)
 import Database.PostgreSQL.Simple.Types (Identifier(..))
 import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.QuickCheck.Instances.Text()
-import Test.QuickCheck
 import Thesis.SqlBuilder
-
-newtype TextParameter = TextParameter Text
-  deriving Show
-
-instance Arbitrary TextParameter where
-  arbitrary = fmap TextParameter arbitrary
-
-emitPart :: Either ASCIIString TextParameter -> SqlPart
-emitPart value =
-  case value of
-    Left (ASCIIString text) -> emit $ T.pack text
-    Right (TextParameter text) -> emitParameter text
-
-countQuestionMarks :: Text -> Int
-countQuestionMarks = T.length . T.filter (== '?')
 
 spec :: Spec
 spec =
@@ -45,8 +29,3 @@ spec =
         let emitted = mconcat $ map emit parts
             expected = SqlPart (T.concat parts) mempty
         in emitted `shouldBe` expected
-
-    prop "emits question marks corresponding to the number of parameters" $
-      \(parts :: [Either ASCIIString TextParameter]) ->
-        let SqlPart sql ps = mconcat $ map emitPart parts
-        in countQuestionMarks sql `shouldBe` length ps
