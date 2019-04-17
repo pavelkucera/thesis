@@ -1,8 +1,8 @@
 {-# LANGUAGE TypeFamilies #-}
 
-module Composition where
+module Thesis.Composition where
 
-import Types
+import Thesis.Types
 
 data BudgetDepleted = BudgetDepleted
   deriving (Eq, Show)

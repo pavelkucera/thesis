@@ -1,4 +1,4 @@
-module Types (
+module Thesis.Types (
   Epsilon,
   Delta,
   NonPositiveEpsilon(..),
