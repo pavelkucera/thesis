@@ -42,6 +42,7 @@ tests:
     ghc-options:
       - -Wno-type-defaults
       - -Wno-incomplete-uni-patterns
+      - -Wno-orphans
     build-tools: hspec-discover
     dependencies:
       - hspec
