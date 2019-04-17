@@ -1,7 +1,16 @@
-module Types (Epsilon, Delta, epsilon, getEpsilon, delta, getDelta, QueryError(..)) where
+module Types (
+  Epsilon,
+  Delta,
+  QueryError(..)
+  epsilon,
+  getEpsilon,
+  delta,
+  getDelta,
+) where
 
 newtype Epsilon = Epsilon Double
   deriving (Show, Eq, Ord)
+
 newtype Delta = Delta Double
   deriving (Show, Eq, Ord)
 
