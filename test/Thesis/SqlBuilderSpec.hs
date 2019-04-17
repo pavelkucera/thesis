@@ -11,16 +11,17 @@ import Test.QuickCheck.Instances.Text()
 import Test.QuickCheck
 import Thesis.SqlBuilder
 
-instance Arbitrary Parameter where
-  arbitrary = do
-    value <- arbitrary :: Gen Text
-    return $ Parameter value
+newtype TextParameter = TextParameter Text
+  deriving Show
 
-emitPart :: Either ASCIIString Parameter -> SqlPart
+instance Arbitrary TextParameter where
+  arbitrary = fmap TextParameter arbitrary
+
+emitPart :: Either ASCIIString TextParameter -> SqlPart
 emitPart value =
   case value of
     Left (ASCIIString text) -> emit $ T.pack text
-    Right parameter -> emitParameter parameter
+    Right (TextParameter text) -> emitParameter text
 
 countQuestionMarks :: Text -> Int
 countQuestionMarks = T.length . T.filter (== '?')
@@ -46,6 +47,6 @@ spec =
         in emitted `shouldBe` expected
 
     prop "emits question marks corresponding to the number of parameters" $
-      \(parts :: [Either ASCIIString Parameter]) ->
+      \(parts :: [Either ASCIIString TextParameter]) ->
         let SqlPart sql ps = mconcat $ map emitPart parts
         in countQuestionMarks sql `shouldBe` length ps

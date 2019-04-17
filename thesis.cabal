@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 7eb13a78fd707fdba23fe4d30ab4184b749f9c35ebdb0754458e74564418a20c
+-- hash: 2f9eb0e2bbe1927adce194fa07f854f238676b38d58992e36f200dfd778c5242
 
 name:           thesis
 version:        0.0.0
@@ -61,7 +61,7 @@ test-suite spec
     test
     src
   default-extensions: ScopedTypeVariables
-  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -Wno-type-defaults -Wno-incomplete-uni-patterns -Wno-orphans
+  ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -Wno-type-defaults -Wno-incomplete-uni-patterns
   build-tool-depends:
     hspec-discover:hspec-discover
   build-depends:
