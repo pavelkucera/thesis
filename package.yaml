@@ -37,6 +37,8 @@ tests:
       - test
       - src
     main: Spec.hs
+    default-extensions:
+      - ScopedTypeVariables
     ghc-options:
       - -Wno-type-defaults
       - -Wno-incomplete-uni-patterns
