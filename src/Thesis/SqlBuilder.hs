@@ -4,8 +4,9 @@
 module Thesis.SqlBuilder where
 
 import Data.Text (Text)
+import Data.Text.Encoding (encodeUtf8)
 import Data.Typeable (Typeable, cast)
-import Database.PostgreSQL.Simple.Types (Identifier(..))
+import Database.PostgreSQL.Simple.Types (Identifier(..), Query(..))
 import Database.PostgreSQL.Simple.ToField (ToField(..))
 
 data Parameter where
@@ -40,3 +41,6 @@ emitParameter p = SqlPart "?" [Parameter p]
 
 emitIdentifier :: Text -> SqlPart
 emitIdentifier i = emitParameter $ Identifier i
+
+toQuery :: SqlPart -> (Query, [Parameter])
+toQuery (SqlPart sql ps) = (Query $ encodeUtf8 sql, ps)
