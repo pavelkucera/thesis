@@ -1,13 +1,9 @@
 stages:
   - test
 
-variables:
-  STACK_ROOT: "${CI_PROJECT_DIR}/.stack"
-
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - .stack
     - .stack-work
 
 before_script:
