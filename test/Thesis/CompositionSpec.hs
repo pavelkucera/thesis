@@ -1,9 +1,9 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module CompositionSpec (spec) where
+module Thesis.CompositionSpec (spec) where
 
-import Composition
-import Types
+import Thesis.Composition
+import Thesis.Types
 import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.QuickCheck

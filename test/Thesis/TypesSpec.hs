@@ -1,6 +1,6 @@
-module TypesSpec (spec) where
+module Thesis.TypesSpec (spec) where
 
-import Types
+import Thesis.Types
 import Data.Either (isLeft, isRight)
 import Test.Hspec
 import Test.Hspec.QuickCheck
