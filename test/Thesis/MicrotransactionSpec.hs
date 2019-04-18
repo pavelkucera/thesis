@@ -50,6 +50,5 @@ spec =
         let defaultAnswer = 42
             answer = delay (10 :: Second) >> return 5
             targetTime = microseconds 1
-        in do
-        result <- runMicrotransaction targetTime defaultAnswer answer
-        result `shouldBe` (defaultAnswer :: Int)
+        in runMicrotransaction targetTime defaultAnswer answer
+           `shouldReturn` (defaultAnswer :: Int)
