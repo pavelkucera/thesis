@@ -11,12 +11,12 @@ before_script:
 
 test:
   stage: test
-  image: pavelkucera/thesis:lts-13.16
+  image: pavelkucera/thesis:lts-13.17
   script:
     - stack test --color always --test-arguments=--color
 
 hlint:
   stage: test
-  image: pavelkucera/thesis:lts-13.16
+  image: pavelkucera/thesis:lts-13.17
   script:
     - hlint src
