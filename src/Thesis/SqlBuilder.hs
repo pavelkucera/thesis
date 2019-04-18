@@ -1,7 +1,20 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Thesis.SqlBuilder where
+module Thesis.SqlBuilder (
+  -- * Usage
+  -- $use
+
+  -- * SQL builders
+  emit,
+  emitIdentifier,
+  emitParameter,
+  toQuery,
+
+  -- * Types
+  SqlPart(..),
+  Parameter(..)
+) where
 
 import Data.Text (Text)
 import Data.Text.Encoding (encodeUtf8)
@@ -9,6 +22,7 @@ import Data.Typeable (Typeable, cast)
 import Database.PostgreSQL.Simple.Types (Identifier(..), Query(..))
 import Database.PostgreSQL.Simple.ToField (ToField(..))
 
+-- | An parameter which is to be escaped before sending to the database.
 data Parameter where
   Parameter :: (Eq a, Show a, ToField a, Typeable a) => a -> Parameter
 
@@ -22,6 +36,11 @@ instance Show Parameter where
 instance ToField Parameter where
   toField (Parameter x) = toField x
 
+-- | Representation of an SQL query. Do not use directly, to prevent introducing
+-- SQL injection. Use 'emit', 'emitIdentifier' and 'emitParameter' to build the SQL.
+--
+-- The type is an instance of 'Monoid', and the emit functions can be thus linked
+-- using '<>'.
 data SqlPart =
   SqlPart Text [Parameter]
   deriving (Eq, Show)
@@ -33,15 +52,36 @@ instance Semigroup SqlPart where
 instance Monoid SqlPart where
   mempty = SqlPart mempty mempty
 
--- expects sql not to contain any question marks
+-- | Use to emit raw, unescaped SQL without any parameters. The SQL should not
+-- contain any question marks, which are used as parameter placeholders.
 emit :: Text -> SqlPart
 emit sql = SqlPart sql mempty
 
+-- | Use to safely emit unknown text as a part of the SQL. Use for escaping
+-- user input etc. Escaping is offloaded to the underlying database client.
 emitParameter :: (Eq a, Show a, ToField a, Typeable a) => a -> SqlPart
 emitParameter p = SqlPart "?" [Parameter p]
 
+-- | Use to safely emit an identifier.
 emitIdentifier :: Text -> SqlPart
 emitIdentifier i = emitParameter $ Identifier i
 
+-- | Transforms SqlPart into a query representation used by the underlying
+-- database client.
 toQuery :: SqlPart -> (Query, [Parameter])
 toQuery (SqlPart sql ps) = (Query $ encodeUtf8 sql, ps)
+
+-- $use
+-- Use the 'emit', 'emitIdentifier' and 'emitParameter' functions to generate
+-- escaped SQL queries. The following code
+--
+-- > emit "SELECT * FROM " <>
+-- > emitIdentifier "table" <>
+-- > emit " WHERE column = " <>
+-- > emitParameter 5
+-- generates SQL
+--
+-- > SELECT * FROM ? WHERE column = ?
+--
+-- where the question marks get replaced by escaped values when they the query
+-- is sent to the database.
