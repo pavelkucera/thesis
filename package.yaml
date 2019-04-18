@@ -24,6 +24,8 @@ dependencies:
   - mtl
   - deepseq
   - exceptions
+  - postgresql-simple
+  - text
   - time
   - time-units
   - time-out
@@ -37,6 +39,8 @@ tests:
       - test
       - src
     main: Spec.hs
+    default-extensions:
+      - ScopedTypeVariables
     ghc-options:
       - -Wno-type-defaults
       - -Wno-incomplete-uni-patterns
@@ -45,3 +49,4 @@ tests:
       - hspec
       - hspec-discover
       - QuickCheck
+      - quickcheck-instances
