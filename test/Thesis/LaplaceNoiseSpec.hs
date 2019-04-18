@@ -1,5 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Thesis.LaplaceNoiseSpec (spec) where
 
 import System.Random (mkStdGen)
