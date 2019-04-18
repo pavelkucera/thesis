@@ -6,9 +6,6 @@ cache:
   paths:
     - .stack-work
 
-before_script:
-  - stack config set system-ghc true
-
 test:
   stage: test
   image: pavelkucera/thesis:lts-13.17
