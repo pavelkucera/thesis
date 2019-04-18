@@ -25,6 +25,7 @@ dependencies:
   - deepseq
   - exceptions
   - postgresql-simple
+  - random
   - text
   - time
   - time-units

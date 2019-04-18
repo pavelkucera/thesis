@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2f9eb0e2bbe1927adce194fa07f854f238676b38d58992e36f200dfd778c5242
+-- hash: 9380bfd16dfc163e6fefbbcbde712477aa5280b51b43ef9b92eebdf73c9f938a
 
 name:           thesis
 version:        0.0.0
@@ -28,6 +28,7 @@ source-repository head
 library
   exposed-modules:
     Main
+    Thesis.LaplaceNoise
     Thesis.Microtransaction
     Thesis.SqlBuilder
   other-modules:
@@ -41,6 +42,7 @@ library
     exceptions,
     mtl,
     postgresql-simple,
+    random,
     text,
     time,
     time-out,
@@ -51,9 +53,11 @@ test-suite spec
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+    Thesis.LaplaceNoiseSpec
     Thesis.MicrotransactionSpec
     Thesis.SqlBuilderSpec
     Main
+    Thesis.LaplaceNoise
     Thesis.Microtransaction
     Thesis.SqlBuilder
     Paths_thesis
@@ -74,6 +78,7 @@ test-suite spec
     mtl,
     postgresql-simple,
     quickcheck-instances,
+    random,
     text,
     time,
     time-out,
