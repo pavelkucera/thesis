@@ -12,7 +12,8 @@ spec =
   describe "Thesis.LaplaceNoise" $
     describe "uniformToLaplace" $ do
       prop "always transforms 0 into 0" $
-        \(scale, mean) -> uniformToLaplace scale mean 0 `shouldBe` mean
+        \scale mean -> uniformToLaplace scale mean 0 `shouldBe` mean
+
       prop "generates noise" $
         \seed scale ->
           let (noise, _) = generate (mkStdGen seed) scale
