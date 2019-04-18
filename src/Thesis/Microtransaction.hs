@@ -1,6 +1,6 @@
 module Thesis.Microtransaction where
 
-import Control.DeepSeq (NFData, force)
+import Control.DeepSeq (NFData, force, deepseq)
 import Control.Monad.Catch (MonadMask)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Timeout (runTimeoutT, withTimeoutCatch)
@@ -36,10 +36,13 @@ timeoutMicrotransaction :: (TimeUnit t, NFData a, MonadIO m, MonadMask m)
                         -> m (Microsecond, a) -- ^ Elapsed time and result
 timeoutMicrotransaction baseTime defaultAnswer transaction =
   let targetTime = subTime baseTime cleanupTime :: Microsecond
-      action = withTimeoutCatch transaction
-  in time $ do
-    answer <- runTimeoutT action targetTime
-    return $ fromMaybe defaultAnswer answer
+      action = defaultAnswer `deepseq` withTimeoutCatch transaction
+  in time $
+    if targetTime >= 1 then do
+      answer <- runTimeoutT action targetTime
+      return $ fromMaybe defaultAnswer answer
+    else
+      return defaultAnswer
 
 -- | Runs action for a specifed amount of time. If the action finishes before the
 -- time limit, the program awaits until the target time is reached. If the action
