@@ -42,6 +42,6 @@ tests:
       - -Wno-incomplete-uni-patterns
     build-tools: hspec-discover
     dependencies:
-      - hspec >= 2.6 && < 2.7
-      - hspec-discover >= 2.6 && < 2.7
-      - QuickCheck >= 2.12 && < 2.13
+      - hspec
+      - hspec-discover
+      - QuickCheck
