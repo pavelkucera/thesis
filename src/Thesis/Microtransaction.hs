@@ -1,9 +1,10 @@
 module Thesis.Microtransaction where
 
 import Control.DeepSeq (NFData, force)
-import Control.Monad.Catch (MonadCatch)
+import Control.Monad.Catch (MonadMask)
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Timeout (delay, timeout)
+import Control.Monad.Trans.Timeout (runTimeoutT, withTimeoutCatch)
+import Control.Timeout (delay)
 import Data.Maybe (fromMaybe)
 import Data.Time.Clock.POSIX (POSIXTime, getPOSIXTime)
 import Data.Time.Units (Microsecond, TimeUnit, fromMicroseconds, subTime)
@@ -22,15 +23,16 @@ time f = do
   let elapsedTime = posixToTimeUnit $ endTime - startTime
   return (elapsedTime, value)
 
-timeoutMicrotransaction :: (TimeUnit t, NFData a, MonadIO m, MonadCatch m)
+timeoutMicrotransaction :: (TimeUnit t, NFData a, MonadIO m, MonadMask m)
                         => t -> a -> m a -> m (Microsecond, a)
 timeoutMicrotransaction baseTime defaultAnswer transaction =
   let targetTime = subTime baseTime cleanupTime :: Microsecond
+      action = withTimeoutCatch transaction
   in time $ do
-    answer <- timeout targetTime transaction
+    answer <- runTimeoutT action targetTime
     return $ fromMaybe defaultAnswer answer
 
-runMicrotransaction :: (TimeUnit t, NFData a, MonadIO m, MonadCatch m)
+runMicrotransaction :: (TimeUnit t, NFData a, MonadIO m, MonadMask m)
                     => t -> a -> m a -> m a
 runMicrotransaction targetTime defaultAnswer transaction = do
   (elapsedTime, answer) <- timeoutMicrotransaction targetTime defaultAnswer transaction
