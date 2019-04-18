@@ -1,9 +1,9 @@
--- |Generates Laplace noise
+-- | Generates Laplace noise
 module Thesis.LaplaceNoise where
 
 import System.Random (StdGen, random)
 
--- |Generates a random variable drawn from a Laplace distribution with the given scale using the
+-- | Generates a random variable drawn from a Laplace distribution with the given scale using the
 -- given random number generator.
 generate :: StdGen -> Double -> (Double, StdGen)
 generate gen scale =
@@ -13,7 +13,10 @@ generate gen scale =
       noise = uniformToLaplace scale 0 uniform
   in (noise, newGen)
 
--- |Transforms a random variable drawn from a uniform distribution in (-0.5, 0.5] into a variable
+-- | Transforms a random variable drawn from a uniform distribution in (-0.5, 0.5] into a variable
 -- with distribution Laplace(mean, scale). This function contains no checks on the input variable.
-uniformToLaplace :: Double -> Double -> Double -> Double
+uniformToLaplace :: Double -- ^ The scale of the Laplace distribution
+                 -> Double -- ^ The mean of the Laplace distribution
+                 -> Double -- ^ A random variable drawn uniformly from (-0.5, 0.5]
+                 -> Double -- ^ A random value drawn from Laplace(mean, scale)
 uniformToLaplace scale mean uniform = mean - scale * signum uniform * log(1 - 2 * abs uniform)
