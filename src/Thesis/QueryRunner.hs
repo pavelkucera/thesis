@@ -10,5 +10,6 @@ runQuery :: Query -> IO Text
 runQuery query = do
   let queryResult = runMicrotransaction timeout (defaultAnswer query) (runSql query)
   let gen = getStdGen
-  let noise = generate gen (getSensitivity query / getEpsilon query)
+  let (noise, newGen) = generate gen (getSensitivity query / getEpsilon query)
+  setStdGen newGen
   return queryResult + noise
