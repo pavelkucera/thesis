@@ -1,5 +1,3 @@
-{-# LANGUAGE TypeFamilies #-}
-
 module Thesis.Composition where
 
 import Thesis.ValueGuard
