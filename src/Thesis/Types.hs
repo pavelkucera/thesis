@@ -1,7 +1,4 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE UndecidableInstances #-}
-
-module Thesis.Types  where
+module Thesis.Types where
 
 type Epsilon = Double
 type Delta = Double
