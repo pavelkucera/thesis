@@ -9,6 +9,10 @@ import Data.ByteString (ByteString)
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Time
 import Data.Scientific
+import System.Random
+
+import Thesis.SqlBuilder
+import Thesis.LaplaceNoise
 
 connStr :: ByteString
 connStr = "host=localhost dbname=leendert user=leendert password=leendert"
@@ -18,7 +22,13 @@ data Person = Person { id :: Int, firstName :: String, lastName :: String, email
 
 main :: IO ()
 main = do
-  let queryString = "SELECT id, first_name, last_name, email, gender, salary, birthdate FROM people"
+  let queryEpsilon = 0.1;
+  --let ast = Select (Average (Column "salary")) ("people") (Just (BinaryOp (Column "id") "<" (Literal (Value (200 :: Integer)))))
+  let sqlPart = emit "SELECT AVG(salary) FROM people"
+  let sqlQuery = toQuery sqlPart
+  gen <- getStdGen
   conn <- connectPostgreSQL connStr
-  result <- (query_ conn queryString)
-  print (result :: [Person])
+  result <- (query conn (fst sqlQuery) (snd sqlQuery))
+  let (noise, newGen) = generate gen queryEpsilon
+  setStdGen $ newGen
+  print $ (fromOnly $ head $ (result :: [Only Scientific])) + fromFloatDigits noise
