@@ -8,7 +8,18 @@ import Data.Time.Clock (UTCTime(..), secondsToDiffTime)
 import Data.Time.Clock.POSIX (getPOSIXTime, utcTimeToPOSIXSeconds)
 import Data.Time.Units (Microsecond, Second, fromMicroseconds)
 import Test.Hspec
+import Test.Hspec.QuickCheck
+import Test.QuickCheck
 import Thesis.Microtransaction
+
+newtype PositiveSecond = PositiveSecond Second
+  deriving Show
+
+instance Arbitrary PositiveSecond where
+  arbitrary = do
+    (Positive int) <- arbitrary
+    let seconds = int * 1000000
+    return $ PositiveSecond (fromMicroseconds seconds)
 
 microseconds :: Integer -> Microsecond
 microseconds = fromMicroseconds
@@ -46,9 +57,10 @@ spec =
         elapsedTime `shouldSatisfy` (>= targetTime)
         result `shouldBe` (5 :: Int)
 
-      it "returns the default answer on a timeout" $
-        let defaultAnswer = 42
-            answer = delay (10 :: Second) >> return 5
-            targetTime = microseconds 1
-        in runMicrotransaction targetTime defaultAnswer answer
-           `shouldReturn` (defaultAnswer :: Int)
+      prop "returns the default answer on a timeout" $
+        \(PositiveSecond seconds) ->
+          let defaultAnswer = 42
+              answer = delay seconds >> return 5
+              targetTime = microseconds 500
+          in runMicrotransaction targetTime defaultAnswer answer
+            `shouldReturn` (defaultAnswer :: Int)
