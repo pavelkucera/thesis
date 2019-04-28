@@ -16,7 +16,7 @@ import Thesis.LaplaceNoise
 import Thesis.Ast
 
 connStr :: ByteString
-connStr = "host=localhost dbname=leendert user=leendert password=leendert"
+connStr = "host=localhost dbname=postgres user=postgres password=password"
 
 data Person = Person { id :: Int, firstName :: String, lastName :: String, email :: String, gender :: String, salary :: Scientific, birthdate :: Date }
   deriving (Generic, FromRow, Show)
