@@ -30,6 +30,8 @@ dependencies:
   - time
   - time-units
   - time-out
+  - scientific
+  - bytestring
 
 library:
   source-dirs: src

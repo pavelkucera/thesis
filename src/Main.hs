@@ -13,6 +13,7 @@ import System.Random
 
 import Thesis.SqlBuilder
 import Thesis.LaplaceNoise
+import Thesis.Ast
 
 connStr :: ByteString
 connStr = "host=localhost dbname=leendert user=leendert password=leendert"
@@ -23,12 +24,19 @@ data Person = Person { id :: Int, firstName :: String, lastName :: String, email
 main :: IO ()
 main = do
   let queryEpsilon = 0.1;
-  --let ast = Select (Average (Column "salary")) ("people") (Just (BinaryOp (Column "id") "<" (Literal (Value (200 :: Integer)))))
+  let ast = Select (Average (Column "salary")) ("people") (Just (BinaryOp (Column "id") "<" (Literal (Value (200 :: Integer)))))
+  print $ selectToQuery ast
   let sqlPart = emit "SELECT AVG(salary) FROM people"
   let sqlQuery = toQuery sqlPart
   gen <- getStdGen
   conn <- connectPostgreSQL connStr
   result <- (query conn (fst sqlQuery) (snd sqlQuery))
-  let (noise, newGen) = generate gen queryEpsilon
-  setStdGen $ newGen
+  let sensitivity = 1
+  let scale = queryEpsilon / sensitivity
+  let (noise, newGen) = generate gen scale
   print $ (fromOnly $ head $ (result :: [Only Scientific])) + fromFloatDigits noise
+  let q2 = selectToQuery ast
+  result2 <- (query conn (fst q2) (snd q2))
+  let (noise2, newGen2) = generate newGen scale
+  setStdGen $ newGen2
+  print $ (fromOnly $ head $ (result2 :: [Only Scientific])) + fromFloatDigits noise2
