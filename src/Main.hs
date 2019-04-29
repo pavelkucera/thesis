@@ -4,16 +4,16 @@
 
 module Main where
 
-import GHC.Generics (Generic)
 import Data.ByteString (ByteString)
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Time
 import Data.Scientific
-import System.Random
+import Data.Text (unpack)
+import GHC.Generics (Generic)
+import Data.Time.Units (Microsecond)
 
-import Thesis.SqlBuilder
-import Thesis.LaplaceNoise
 import Thesis.Ast
+import Thesis.SqlRunner
 
 connStr :: ByteString
 connStr = "host=localhost dbname=postgres user=postgres password=password"
@@ -25,18 +25,8 @@ main :: IO ()
 main = do
   let queryEpsilon = 0.1;
   let ast = Select (Average (Column "salary")) ("people") (Just (BinaryOp (Column "id") "<" (Literal (Value (200 :: Integer)))))
-  print $ selectToQuery ast
-  let sqlPart = emit "SELECT AVG(salary) FROM people"
-  let sqlQuery = toQuery sqlPart
-  gen <- getStdGen
+  let timeout = 10000 :: Microsecond
+  let defaultAnswer = [Only $ fromFloatDigits (1.0 :: Double)]
   conn <- connectPostgreSQL connStr
-  result <- (query conn (fst sqlQuery) (snd sqlQuery))
-  let sensitivity = 1
-  let scale = queryEpsilon / sensitivity
-  let (noise, newGen) = generate gen scale
-  print $ (fromOnly $ head $ (result :: [Only Scientific])) + fromFloatDigits noise
-  let q2 = selectToQuery ast
-  result2 <- (query conn (fst q2) (snd q2))
-  let (noise2, newGen2) = generate newGen scale
-  setStdGen $ newGen2
-  print $ (fromOnly $ head $ (result2 :: [Only Scientific])) + fromFloatDigits noise2
+  output <- executeSql timeout defaultAnswer conn ast queryEpsilon
+  print $ unpack $ output

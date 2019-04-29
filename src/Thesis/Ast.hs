@@ -40,6 +40,7 @@ data Select = Select {
 
 selectToQuery :: Select -> (Query, [Parameter])
 selectToQuery (Select sAgg sFrom sWhere) = toQuery $ emit "SELECT " <> emitAggregation sAgg <> emitFrom sFrom <> emitWhere sWhere
+
 emitExpr :: Expr -> SqlPart
 emitExpr (Literal (Value v)) = emit $ pack $ show v
 emitExpr (Column identifier) = emitIdentifier identifier
@@ -62,3 +63,8 @@ emitWhere (Just expr) = emit "WHERE " <> emitExpr expr
 
 emitFrom :: Identifier -> SqlPart
 emitFrom identifier = emit "FROM " <> emitIdentifier identifier <> emit " "
+
+getSensitivity :: Aggregation -> Double
+getSensitivity (Average _) = 1
+getSensitivity (Sum _) = 1
+getSensitivity (Count _) = 1

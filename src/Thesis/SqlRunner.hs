@@ -2,19 +2,26 @@
 
 module Thesis.SqlRunner where
 
-import Data.ByteString (ByteString)
-import Data.Text (Text)
+import System.Random
+import Data.Text (Text, pack)
+import Data.Scientific
 import Database.PostgreSQL.Simple
+import Database.PostgreSQL.Simple.FromRow
 import Thesis.Ast
-import Thesis.SqlBuilder
+import Thesis.LaplaceNoise (generate)
+import Thesis.Microtransaction
+import Thesis.Types
+import Data.Time.Units (Microsecond, TimeUnit)
+import Control.DeepSeq (NFData)
 
-sqlConnectionString :: ByteString
-sqlConnectionString = "host=localhost dbname=postgres user=leendert password=leendert"
-
-executeSql :: Text -> IO Text
-executeSql ast = do
-  let sqlPart = emit ast
-  conn <- connectPostgreSQL sqlConnectionString
-  let (pquery, parameters) = toQuery sqlPart
-  [Only result] <- query conn pquery parameters
-  return result
+executeSql :: (TimeUnit t, NFData a) => t -> a -> Connection -> Select -> Epsilon -> IO Text
+executeSql timeout defaultAnswer conn ast e = do
+  let (pquery, parameters) = selectToQuery ast
+  gen <- getStdGen
+  result <- (runMicrotransaction timeout defaultAnswer ((query conn pquery parameters)))
+  let sensitivity = getSensitivity (selectAggregation ast)
+  let scale = e / sensitivity
+  let (noise, newGen) = generate gen scale
+  setStdGen newGen
+  --return result
+  return $ pack $ show $ (fromOnly $ head $ (result)) + fromFloatDigits noise
