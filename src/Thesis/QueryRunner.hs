@@ -1,15 +1,18 @@
 module Thesis.QueryRunner where
 
-import Thesis.Microtransaction (runMicrotransaction)
-import Thesis.LaplaceNoise (generate)
-import Thesis.Query
-import Thesis.SqlRunner (runSql)
-import System.Random (getStdGen)
+import Data.Scientific
+import Data.Text (Text, pack)
+import Database.PostgreSQL.Simple (Connection)
+import System.Random (StdGen)
+import Data.Time.Units (TimeUnit)
 
-runQuery :: Query -> IO Text
-runQuery query = do
-  let queryResult = runMicrotransaction timeout (defaultAnswer query) (runSql query)
-  let gen = getStdGen
-  let (noise, newGen) = generate gen (getSensitivity query / getEpsilon query)
-  setStdGen newGen
-  return queryResult + noise
+import Thesis.Query
+import Thesis.SqlRunner (executeSql)
+import Thesis.ValueGuard
+
+runQuery :: (TimeUnit t) => t -> Connection -> StdGen -> Query -> IO (Text, StdGen)
+runQuery timeout conn gen query = do
+  let myDefaultAnswer = pack $ show $ fromFloatDigits (defaultAnswer query)
+  let epsilon = value $ getEpsilon query
+  (queryResult, newGen) <- executeSql timeout gen myDefaultAnswer conn (ast query) epsilon
+  return (pack $ show queryResult, newGen)

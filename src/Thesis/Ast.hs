@@ -5,7 +5,7 @@ module Thesis.Ast where
 
 import Data.Text (Text, pack)
 import Data.Typeable (Typeable)
-import Database.PostgreSQL.Simple.ToField (ToField, toField)
+import Database.PostgreSQL.Simple.ToField (ToField)
 import Database.PostgreSQL.Simple.Types (Query(..))
 
 import Thesis.SqlBuilder
@@ -42,7 +42,7 @@ selectToQuery :: Select -> (Query, [Parameter])
 selectToQuery (Select sAgg sFrom sWhere) = toQuery $ emit "SELECT " <> emitAggregation sAgg <> emitFrom sFrom <> emitWhere sWhere
 
 emitExpr :: Expr -> SqlPart
-emitExpr (Literal (Value v)) = emit $ pack $ show v
+emitExpr (Literal (Value v)) = emitParameter $ v
 emitExpr (Column identifier) = emitIdentifier identifier
 emitExpr (PrefixOp identifier expr) = emit identifier <> emitExpr expr
 emitExpr (PostfixOp identifier expr) = emitExpr expr <> emit identifier
@@ -58,7 +58,7 @@ emitAggregation (Count countExpr) = emit "COUNT(" <> case countExpr of
   <> emit ") "
 
 emitWhere :: Maybe Expr -> SqlPart
-emitWhere Nothing = emit ""
+emitWhere Nothing = emit mempty
 emitWhere (Just expr) = emit "WHERE " <> emitExpr expr
 
 emitFrom :: Identifier -> SqlPart
