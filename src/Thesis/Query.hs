@@ -4,4 +4,4 @@ import Thesis.Ast
 import Thesis.Types
 import Thesis.ValueGuard
 
-data Query = Query { getEpsilon :: Positive Epsilon, getDelta :: NonNegative Delta, ast :: Select, defaultAnswer :: Double }
+data Query = Query { queryEpsilon :: Positive Epsilon, queryAst :: Select }
