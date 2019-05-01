@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeFamilies #-}
+
 module Thesis.Composition.Simple where
 
 import Thesis.Composition.PrivacyFilter (PrivacyFilter(..), BudgetDepleted(..))
@@ -9,6 +11,7 @@ data SimpleCompositionState =
   deriving (Eq, Show)
 
 instance PrivacyFilter SimpleCompositionState where
+  type Budget SimpleCompositionState = (NonNegative Epsilon, NonNegative Delta)
   emptyState (epsilon, delta) = SimpleCompositionState epsilon delta
   subtractBudget (SimpleCompositionState epsilon delta) (epsilonI, deltaI) =
     let newEpsilonValue = value epsilon - value epsilonI

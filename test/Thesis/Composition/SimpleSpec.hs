@@ -55,3 +55,9 @@ spec = do
           newState = subtractBudget state price
           Right (SimpleCompositionState _ newDelta) = newState
       in value newDelta < initialDelta
+
+mkBudget :: Epsilon -> Delta -> Budget SimpleCompositionState
+mkBudget epsilon delta =
+  case (nonNegative epsilon, nonNegative delta) of
+    (Right epsilon, Right delta) -> (epsilon, delta)
+    _ -> error "Budget does not correspond to the requirements"

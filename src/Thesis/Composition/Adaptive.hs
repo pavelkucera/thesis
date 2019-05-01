@@ -1,12 +1,15 @@
+{-# LANGUAGE TypeFamilies #-}
+
 module Thesis.Composition.Adaptive where
 
 import Data.Bifunctor (bimap)
 import Thesis.Composition.PrivacyFilter (PrivacyFilter(..), Budget, BudgetDepleted(..))
-import Thesis.ValueGuard (value)
+import Thesis.ValueGuard (Positive, value)
+import Thesis.Types
 
 data AdaptiveCompositionState =
   AdaptiveCompositionState {
-    budgetG :: Budget,
+    budgetG :: Budget AdaptiveCompositionState,
     expEpsilonSum :: Double,
     squaredEpsilonSum :: Double,
     deltaSum :: Double
@@ -14,6 +17,7 @@ data AdaptiveCompositionState =
   deriving (Eq, Show)
 
 instance PrivacyFilter AdaptiveCompositionState where
+  type Budget AdaptiveCompositionState = (Positive Epsilon, Positive Delta)
   emptyState budget = AdaptiveCompositionState budget 0 0 0
   subtractBudget state price =
     let (epsilonG, deltaG) = bimap value value $ budgetG state

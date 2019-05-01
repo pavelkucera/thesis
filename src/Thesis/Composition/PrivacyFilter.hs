@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeFamilies #-}
+
 module Thesis.Composition.PrivacyFilter where
 
 import Thesis.Types
@@ -6,9 +8,9 @@ import Thesis.ValueGuard
 data BudgetDepleted = BudgetDepleted
   deriving (Eq, Show)
 
-type Budget = (NonNegative Epsilon, NonNegative Delta)
 type QueryPrice = (Positive Epsilon, NonNegative Delta)
 
 class PrivacyFilter a where
-  emptyState :: Budget -> a
+  type Budget a :: *
+  emptyState :: Budget a -> a
   subtractBudget :: a -> QueryPrice -> Either BudgetDepleted a

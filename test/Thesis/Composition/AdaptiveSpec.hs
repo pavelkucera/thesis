@@ -6,6 +6,8 @@ import Test.Hspec
 import Thesis.Composition.PrivacyFilter
 import Thesis.Composition.Adaptive
 import Thesis.Composition.Helpers
+import Thesis.Types
+import Thesis.ValueGuard
 
 spec :: Spec
 spec = do
@@ -26,3 +28,9 @@ spec = do
         price = mkPrice (2**(-11)) 0
         count = countQueries state price
     in count `shouldBe` 10563
+
+mkBudget :: Epsilon -> Delta -> Budget AdaptiveCompositionState
+mkBudget epsilon delta =
+  case (positive epsilon, positive delta) of
+    (Right epsilon, Right delta) -> (epsilon, delta)
+    _ -> error "Budget does not correspond to the requirements"
