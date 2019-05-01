@@ -4,11 +4,6 @@ import Thesis.Types
 import Thesis.Composition.PrivacyFilter
 import Thesis.ValueGuard
 
-mkBudget :: Epsilon -> Delta -> Budget
-mkBudget epsilon delta =
-  case (nonNegative epsilon, nonNegative delta) of
-    (Right epsilon, Right delta) -> (epsilon, delta)
-
 mkPrice :: Epsilon -> Delta -> QueryPrice
 mkPrice epsilon delta =
   case (positive epsilon, nonNegative delta) of
