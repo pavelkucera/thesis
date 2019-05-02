@@ -9,10 +9,16 @@ import Thesis.SqlBuilder
 -- | Transforms the Select of a Query into an SqlPart
 generateSql :: Query -> SqlPart
 generateSql (Query _ (Select sAgg sFrom sWhere)) =
-  emit "SELECT" <>
+  emitSelect <>
+  emit " " <>
   emitAggregation sAgg <>
+  emit " " <>
   emitFrom sFrom <>
+  emit " " <>
   emitWhere sWhere
+
+emitSelect :: SqlPart
+emitSelect = emit "SELECT"
 
 emitExpr :: Expr -> SqlPart
 emitExpr (Literal (Value v)) = emitParameter $ v
@@ -35,27 +41,27 @@ emitExpr (FunctionCall identifier exprs) =
 
 emitAggregation :: Aggregation -> SqlPart
 emitAggregation (Average expr) =
-  emit " AVG(" <>
+  emit "AVG(" <>
   emitExpr expr <>
-  emit ") "
+  emit ")"
 emitAggregation (Sum expr) =
-  emit " SUM(" <>
+  emit "SUM(" <>
   emitExpr expr <>
-  emit ") "
+  emit ")"
 emitAggregation (Count countExpr) =
-  emit " COUNT(" <>
+  emit "COUNT(" <>
   (case countExpr of
       Star           -> emit "*"
       CountExpr expr -> emitExpr expr) <>
-  emit ") "
+  emit ")"
 
 emitWhere :: Maybe Expr -> SqlPart
 emitWhere Nothing = mempty
 emitWhere (Just expr) =
-  emit " WHERE " <>
+  emit "WHERE" <>
   emitExpr expr
 
 emitFrom :: Identifier -> SqlPart
 emitFrom identifier =
-  emit " FROM " <>
+  emit "FROM" <>
   emitIdentifier identifier
