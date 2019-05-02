@@ -29,7 +29,7 @@ emitExpr (BinaryOp expr1 identifier expr2) =
 emitExpr (FunctionCall identifier exprs) =
   emit identifier <>
   emit "(" <>
-  mconcat (emitExpr `map` exprs) <>
+  foldMap emitExpr exprs <>
   emit ")"
 
 emitAggregation :: Aggregation -> SqlPart
@@ -49,7 +49,7 @@ emitAggregation (Count countExpr) =
   emit ") "
 
 emitWhere :: Maybe Expr -> SqlPart
-emitWhere Nothing = emit mempty
+emitWhere Nothing = mempty
 emitWhere (Just expr) =
   emit " WHERE " <>
   emitExpr expr
