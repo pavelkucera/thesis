@@ -3,12 +3,9 @@
 
 module Thesis.Ast where
 
-import Data.Text (Text, pack)
+import Data.Text (Text)
 import Data.Typeable (Typeable)
 import Database.PostgreSQL.Simple.ToField (ToField)
-import Database.PostgreSQL.Simple.Types (Query(..))
-
-import Thesis.SqlBuilder
 
 type Identifier = Text
 
