@@ -21,7 +21,7 @@ emitSelect :: SqlPart
 emitSelect = emit "SELECT"
 
 emitExpr :: Expr -> SqlPart
-emitExpr (Literal (Value v)) = emitParameter $ v
+emitExpr (Literal (Value v)) = emitParameter v
 emitExpr (Column identifier) = emitIdentifier identifier
 emitExpr (PrefixOp identifier expr) =
   emit identifier <>

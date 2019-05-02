@@ -19,12 +19,12 @@ laplace :: (TimeUnit t, MonadIO m, MonadMask m) => StdGen -> Connection -> Query
 laplace gen conn query timeout =
   let sqlQuery = generateSql query
       (defaultAns, tempGen) = defaultAnswer gen query
-      scale = (value $ queryEpsilon query) / getSensitivity (selectAggregation (queryAst query))
+      scale = value (queryEpsilon query) / getSensitivity (selectAggregation (queryAst query))
       (noise, newGen) = generate tempGen scale
       computation = executeSql conn sqlQuery
   in do
     transactionResult <- runMicrotransaction timeout defaultAns computation
-    return $ (newGen, Right $ transactionResult + noise)
+    return (newGen, Right $ transactionResult + noise)
 
 exponential :: (TimeUnit t, MonadIO m, MonadMask m) => StdGen -> Connection -> Query -> t -> m (StdGen, Either String Double)
 exponential = undefined
