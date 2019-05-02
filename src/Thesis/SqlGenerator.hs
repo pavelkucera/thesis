@@ -8,7 +8,7 @@ import Thesis.SqlBuilder
 
 generateSql :: Query -> SqlPart
 generateSql (Query _ (Select sAgg sFrom sWhere)) =
-  emit "SELECT " <>
+  emit "SELECT" <>
   emitAggregation sAgg <>
   emitFrom sFrom <>
   emitWhere sWhere
@@ -34,15 +34,15 @@ emitExpr (FunctionCall identifier exprs) =
 
 emitAggregation :: Aggregation -> SqlPart
 emitAggregation (Average expr) =
-  emit "AVG(" <>
+  emit " AVG(" <>
   emitExpr expr <>
   emit ") "
 emitAggregation (Sum expr) =
-  emit "SUM(" <>
+  emit " SUM(" <>
   emitExpr expr <>
   emit ") "
 emitAggregation (Count countExpr) =
-  emit "COUNT(" <>
+  emit " COUNT(" <>
   (case countExpr of
       Star           -> emit "*"
       CountExpr expr -> emitExpr expr) <>
@@ -51,11 +51,10 @@ emitAggregation (Count countExpr) =
 emitWhere :: Maybe Expr -> SqlPart
 emitWhere Nothing = emit mempty
 emitWhere (Just expr) =
-  emit "WHERE " <>
+  emit " WHERE " <>
   emitExpr expr
 
 emitFrom :: Identifier -> SqlPart
 emitFrom identifier =
-  emit "FROM " <>
-  emitIdentifier identifier <>
-  emit " "
+  emit " FROM " <>
+  emitIdentifier identifier
