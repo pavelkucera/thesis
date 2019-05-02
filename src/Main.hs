@@ -6,7 +6,6 @@ module Main where
 
 import Data.ByteString (ByteString)
 import Data.Scientific
-import Data.Text (unpack)
 import Data.Time.Units (Microsecond)
 import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Time
@@ -14,8 +13,9 @@ import GHC.Generics (Generic)
 import System.Random
 
 import Thesis.Ast
+import Thesis.Composition.Simple
 import Thesis.Query
-import Thesis.QueryRunner (runQuery)
+import Thesis.QueryRunner (run)
 import Thesis.ValueGuard (positive, nonNegative)
 
 connStr :: ByteString
@@ -27,15 +27,19 @@ data Person = Person { id :: Int, firstName :: String, lastName :: String, email
 main :: IO ()
 main =
   let myAst = Select (Average (Column "salary")) ("people") (Just (BinaryOp (Column "id") "<" (Literal (Value (200 :: Integer)))))
-      (epsilon, delta) = case (positive 0.1, nonNegative 0) of
-        (Right e, Right d) -> (e, d)
-        (Left err , _) -> error $ show err
-        (_, Left err ) -> error $ show err
-      myQuery = Query epsilon delta myAst 0.5
-      timeout = 10000 :: Microsecond
+      (qEpsilon, budgetEpsilon, budgetDelta) = case (positive 0.1, nonNegative 1, nonNegative 0) of
+        (Right e1, Right e2, Right d) -> (e1, e2, d)
+        (Left err, _, _) -> error $ show err
+        (_, Left err, _) -> error $ show err
+        (_, _, Left err) -> error $ show err
+      myQuery = Query qEpsilon myAst
+      timeout = 100000 :: Microsecond
+      privacyFilter = SimpleCompositionState budgetEpsilon budgetDelta
   in do
      conn <- connectPostgreSQL connStr
      gen <- getStdGen
-     (output, newGen) <- runQuery timeout conn gen myQuery
+     (_, newGen, output) <- run gen conn privacyFilter myQuery timeout
      setStdGen newGen
-     print $ unpack $ output
+     case output of
+       Left err -> print err
+       Right result -> print $ result

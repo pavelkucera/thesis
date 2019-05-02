@@ -58,10 +58,10 @@ emitAggregation (Count countExpr) =
 emitWhere :: Maybe Expr -> SqlPart
 emitWhere Nothing = mempty
 emitWhere (Just expr) =
-  emit "WHERE" <>
+  emit "WHERE " <>
   emitExpr expr
 
 emitFrom :: Identifier -> SqlPart
 emitFrom identifier =
-  emit "FROM" <>
+  emit "FROM " <>
   emitIdentifier identifier

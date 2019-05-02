@@ -7,6 +7,7 @@ import Database.PostgreSQL.Simple (Connection)
 import System.Random (StdGen)
 
 import Thesis.Ast
+import Thesis.Composition.PrivacyFilter
 import Thesis.LaplaceNoise (generate)
 import Thesis.Microtransaction (runMicrotransaction)
 import Thesis.Query
@@ -14,7 +15,7 @@ import Thesis.SqlGenerator (generateSql)
 import Thesis.SqlRunner (executeSql)
 import Thesis.ValueGuard
 
-laplace :: (TimeUnit t, MonadIO m, MonadMask m) => StdGen -> Connection -> Query -> t -> m (StdGen, Either String Double)
+laplace :: (TimeUnit t, MonadIO m, MonadMask m) => StdGen -> Connection -> Query -> t -> m (StdGen, Either BudgetDepleted Double)
 laplace gen conn query timeout =
   let sqlQuery = generateSql query
       (defaultAns, tempGen) = defaultAnswer gen query
@@ -29,4 +30,4 @@ exponential :: (TimeUnit t, MonadIO m, MonadMask m) => StdGen -> Connection -> Q
 exponential = undefined
 
 defaultAnswer :: StdGen -> Query -> (Double, StdGen)
-defaultAnswer = undefined
+defaultAnswer gen _ = (1337, gen)
