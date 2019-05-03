@@ -7,10 +7,10 @@ import Thesis.SqlBuilder
 
 -- | Transforms the Select of a Query into an SqlPart
 generateSql :: Select -> SqlPart
-generateSql (Select sAgg sFrom sWhere) =
+generateSql (Select (sAgg, aggExpr) sFrom sWhere) =
   emitSelect <>
   emit " " <>
-  emitAggregation sAgg <>
+  emitAggregation sAgg aggExpr <>
   emit " " <>
   emitFrom sFrom <>
   emit " " <>
@@ -53,22 +53,19 @@ emitExpr (Case branch branches elseExpr) =
     emit " "
   emitElse =
     maybe mempty (\e -> emit "ELSE " <> emitExpr e <> emit " ") elseExpr
+emitExpr Null = emit "NULL"
+emitExpr Star = emit "*"
 
-emitAggregation :: Aggregation -> SqlPart
-emitAggregation (Average expr) =
-  emit "AVG(" <>
+emitAggregation :: Aggregation -> Expr -> SqlPart
+emitAggregation agg expr =
+  emit (aggregationName agg) <>
+  emit "(" <>
   emitExpr expr <>
   emit ")"
-emitAggregation (Sum expr) =
-  emit "SUM(" <>
-  emitExpr expr <>
-  emit ")"
-emitAggregation (Count countExpr) =
-  emit "COUNT(" <>
-  (case countExpr of
-      Star           -> emit "*"
-      CountExpr expr -> emitExpr expr) <>
-  emit ")"
+ where
+  aggregationName Average = "AVG"
+  aggregationName Sum = "SUM"
+  aggregationName Count = "COUNT"
 
 emitWhere :: Maybe Expr -> SqlPart
 emitWhere Nothing = mempty

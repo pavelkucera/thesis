@@ -48,16 +48,16 @@ spec = do
 
   describe "emitAggregation" $ do
     it "emits average correctly" $
-      emitAggregation (Average testExpr) `shouldBe` SqlPart "AVG(?)" [testParameter]
+      emitAggregation Average testExpr `shouldBe` SqlPart "AVG(?)" [testParameter]
 
     it "emits sum correctly" $
-      emitAggregation (Sum testExpr) `shouldBe` SqlPart "SUM(?)" [testParameter]
+      emitAggregation Sum testExpr `shouldBe` SqlPart "SUM(?)" [testParameter]
 
     it "emits count with an expression correctly" $
-      emitAggregation (Count $ CountExpr testExpr) `shouldBe` SqlPart "COUNT(?)" [testParameter]
+      emitAggregation Count testExpr `shouldBe` SqlPart "COUNT(?)" [testParameter]
 
     it "emits count with a star correctly" $
-      emitAggregation (Count $ Star) `shouldBe` SqlPart "COUNT(*)" []
+      emitAggregation Count Star `shouldBe` SqlPart "COUNT(*)" []
 
   describe "emitWhere" $ do
     it "emits an existing where clause correctly" $
@@ -73,6 +73,6 @@ spec = do
 
   describe "generateSql" $
     it "emits SQL based on a query" $
-      generateSql (Select (Count Star) "table" $ Just testExpr)
+      generateSql (Select (Count, Star) "table" $ Just testExpr)
       `shouldBe` SqlPart "SELECT COUNT(*) FROM ? WHERE ?" [Parameter $ Identifier "table", testParameter]
 
