@@ -17,7 +17,7 @@ import Thesis.ValueGuard
 
 laplace :: (TimeUnit t, MonadIO m, MonadMask m) => StdGen -> Connection -> Query -> t -> m (StdGen, Either BudgetDepleted Double)
 laplace gen conn query timeout =
-  let sqlQuery = generateSql query
+  let sqlQuery = generateSql (queryAst query)
       (defaultAns, tempGen) = defaultAnswer gen query
       scale = value (queryEpsilon query) / getSensitivity (selectAggregation (queryAst query))
       (noise, newGen) = generate tempGen scale

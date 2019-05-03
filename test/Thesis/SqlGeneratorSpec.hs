@@ -10,10 +10,8 @@ import Test.Hspec.QuickCheck
 import Test.QuickCheck.Instances.Text()
 
 import Thesis.Ast
-import Thesis.Query
 import Thesis.SqlGenerator
 import Thesis.SqlBuilder (SqlPart(..), Parameter(..))
-import Thesis.ValueGuard
 
 testExpr :: Expr
 testExpr = (Literal (Value ("test" :: String)))
@@ -75,8 +73,6 @@ spec = do
 
   describe "generateSql" $
     it "emits SQL based on a query" $
-      case positive 1 of
-        (Right e) ->
-          generateSql (Query e $ Select (Count Star) "table" $ Just testExpr) `shouldBe`
-          SqlPart "SELECT COUNT(*) FROM ? WHERE ?" [Parameter $ Identifier "table", testParameter]
-        (Left err) -> expectationFailure $ show err
+      generateSql (Select (Count Star) "table" $ Just testExpr)
+      `shouldBe` SqlPart "SELECT COUNT(*) FROM ? WHERE ?" [Parameter $ Identifier "table", testParameter]
+

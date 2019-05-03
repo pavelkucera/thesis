@@ -3,12 +3,11 @@
 module Thesis.SqlGenerator where
 
 import Thesis.Ast
-import Thesis.Query
 import Thesis.SqlBuilder
 
 -- | Transforms the Select of a Query into an SqlPart
-generateSql :: Query -> SqlPart
-generateSql (Query _ (Select sAgg sFrom sWhere)) =
+generateSql :: Select -> SqlPart
+generateSql (Select sAgg sFrom sWhere) =
   emitSelect <>
   emit " " <>
   emitAggregation sAgg <>
