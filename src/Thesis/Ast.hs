@@ -33,3 +33,8 @@ data Select = Select {
   selectFrom :: Identifier,
   selectWhere :: Maybe Expr
 }
+
+getSensitivity :: Aggregation -> Double
+getSensitivity (Average _) = 1
+getSensitivity (Sum _) = 1
+getSensitivity (Count _) = 1

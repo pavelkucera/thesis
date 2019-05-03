@@ -9,7 +9,8 @@ module Thesis.ValueGuard (
   NonNegative,
   positive,
   nonNegative,
-  value
+  value,
+  zero
 ) where
 
 -- | Wrapper for positive values. Use 'positive' to construct a value of this type.
@@ -61,3 +62,6 @@ instance WrappedValue (Positive a) a where
 
 instance WrappedValue (NonNegative a) a where
   value (NonNegative x) = x
+
+zero :: (Num a) => NonNegative a
+zero = NonNegative 0
