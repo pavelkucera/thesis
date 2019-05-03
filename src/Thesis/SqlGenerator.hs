@@ -37,6 +37,22 @@ emitExpr (FunctionCall identifier exprs) =
   emit "(" <>
   foldMap emitExpr exprs <>
   emit ")"
+emitExpr (Case branch branches elseExpr) =
+  emit "CASE " <>
+  emitBranch branch <>
+  emitBranches branches <>
+  emitElse <>
+  emit "END"
+ where
+  emitBranches = foldMap emitBranch
+  emitBranch (cond, expr) =
+    emit "WHEN " <>
+    emitExpr cond <>
+    emit " THEN " <>
+    emitExpr expr <>
+    emit " "
+  emitElse =
+    maybe mempty (\e -> emit "ELSE " <> emitExpr e <> emit " ") elseExpr
 
 emitAggregation :: Aggregation -> SqlPart
 emitAggregation (Average expr) =

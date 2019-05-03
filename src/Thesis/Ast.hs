@@ -21,6 +21,7 @@ data Expr =
   | PostfixOp Identifier Expr
   | BinaryOp Expr Identifier Expr
   | FunctionCall Identifier [Expr]
+  | Case (Expr, Expr) [(Expr, Expr)] (Maybe Expr)
   deriving Show
 
 data CountExpr =
