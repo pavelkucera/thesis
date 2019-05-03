@@ -22,62 +22,61 @@ testParameter :: Parameter
 testParameter = Parameter ("test" :: String)
 
 spec :: Spec
-spec =
-  describe "Thesis.SqlGenerator" $ do
-    describe "emitExpr" $ do
-      prop "emits a parameter for literal values" $
-        \(val :: String) ->
-          emitExpr (Literal (Value val)) `shouldBe` SqlPart "?" [Parameter val]
+spec = do
+  describe "emitExpr" $ do
+    prop "emits a parameter for literal values" $
+      \(val :: String) ->
+        emitExpr (Literal (Value val)) `shouldBe` SqlPart "?" [Parameter val]
 
-      prop "emits an identifier for columns" $
+    prop "emits an identifier for columns" $
+      \(identifier :: Text) ->
+        emitExpr (Column $ identifier) `shouldBe` SqlPart "?" [Parameter $ Identifier identifier]
+
+    prop "emits prefix operations correctly" $
+      \(identifier :: Text) ->
+        emitExpr (PrefixOp identifier testExpr) `shouldBe` SqlPart (identifier `append` "?") [Parameter ("test" :: String)]
+
+    prop "emits postfix operations correctly" $
+      \(identifier :: Text) ->
+        emitExpr (PostfixOp identifier testExpr) `shouldBe` SqlPart ("?" `append` identifier) [Parameter ("test" :: String)] 
+
+    prop "emits binary operations correctly" $
+      \(identifier :: Text) ->
+        emitExpr (BinaryOp testExpr identifier testExpr) `shouldBe` SqlPart ("?" `append` identifier `append` "?") [testParameter, testParameter]
+
+    prop "emits function calls correctly" $
         \(identifier :: Text) ->
-          emitExpr (Column $ identifier) `shouldBe` SqlPart "?" [Parameter $ Identifier identifier]
+          emitExpr (FunctionCall identifier [testExpr]) `shouldBe` SqlPart (identifier `append` "(?)") [testParameter]
 
-      prop "emits prefix operations correctly" $
-        \(identifier :: Text) ->
-          emitExpr (PrefixOp identifier testExpr) `shouldBe` SqlPart (identifier `append` "?") [Parameter ("test" :: String)]
+  describe "emitAggregation" $ do
+    it "emits average correctly" $
+      emitAggregation (Average testExpr) `shouldBe` SqlPart "AVG(?)" [testParameter]
 
-      prop "emits postfix operations correctly" $
-        \(identifier :: Text) ->
-          emitExpr (PostfixOp identifier testExpr) `shouldBe` SqlPart ("?" `append` identifier) [Parameter ("test" :: String)] 
+    it "emits sum correctly" $
+      emitAggregation (Sum testExpr) `shouldBe` SqlPart "SUM(?)" [testParameter]
 
-      prop "emits binary operations correctly" $
-        \(identifier :: Text) ->
-          emitExpr (BinaryOp testExpr identifier testExpr) `shouldBe` SqlPart ("?" `append` identifier `append` "?") [testParameter, testParameter]
+    it "emits count with an expression correctly" $
+      emitAggregation (Count $ CountExpr testExpr) `shouldBe` SqlPart "COUNT(?)" [testParameter]
 
-      prop "emits function calls correctly" $
-          \(identifier :: Text) ->
-            emitExpr (FunctionCall identifier [testExpr]) `shouldBe` SqlPart (identifier `append` "(?)") [testParameter]
+    it "emits count with a star correctly" $
+      emitAggregation (Count $ Star) `shouldBe` SqlPart "COUNT(*)" []
 
-    describe "emitAggregation" $ do
-      it "emits average correctly" $
-        emitAggregation (Average testExpr) `shouldBe` SqlPart "AVG(?)" [testParameter]
+  describe "emitWhere" $ do
+    it "emits an existing where clause correctly" $
+      emitWhere (Just testExpr) `shouldBe` SqlPart "WHERE ?" [testParameter]
 
-      it "emits sum correctly" $
-        emitAggregation (Sum testExpr) `shouldBe` SqlPart "SUM(?)" [testParameter]
+    it "emits an empty where clause correctly" $
+      emitWhere (Nothing) `shouldBe` mempty
 
-      it "emits count with an expression correctly" $
-        emitAggregation (Count $ CountExpr testExpr) `shouldBe` SqlPart "COUNT(?)" [testParameter]
+  describe "emitFrom" $
+    prop "emits a from clause correctly" $
+      \(identifier :: Text) ->
+        emitFrom  identifier `shouldBe` SqlPart "FROM ?" [Parameter $ Identifier identifier]
 
-      it "emits count with a star correctly" $
-        emitAggregation (Count $ Star) `shouldBe` SqlPart "COUNT(*)" []
-
-    describe "emitWhere" $ do
-      it "emits an existing where clause correctly" $
-        emitWhere (Just testExpr) `shouldBe` SqlPart "WHERE ?" [testParameter]
-
-      it "emits an empty where clause correctly" $
-        emitWhere (Nothing) `shouldBe` mempty
-
-    describe "emitFrom" $
-      prop "emits a from clause correctly" $
-        \(identifier :: Text) ->
-          emitFrom  identifier `shouldBe` SqlPart "FROM ?" [Parameter $ Identifier identifier]
-
-    describe "generateSql" $
-      it "emits SQL based on a query" $
-        case positive 1 of
-          (Right e) ->
-            generateSql (Query e $ Select (Count Star) "table" $ Just testExpr) `shouldBe`
-            SqlPart "SELECT COUNT(*) FROM ? WHERE ?" [Parameter $ Identifier "table", testParameter]
-          (Left err) -> expectationFailure $ show err
+  describe "generateSql" $
+    it "emits SQL based on a query" $
+      case positive 1 of
+        (Right e) ->
+          generateSql (Query e $ Select (Count Star) "table" $ Just testExpr) `shouldBe`
+          SqlPart "SELECT COUNT(*) FROM ? WHERE ?" [Parameter $ Identifier "table", testParameter]
+        (Left err) -> expectationFailure $ show err
