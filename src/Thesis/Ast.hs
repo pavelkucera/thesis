@@ -11,6 +11,9 @@ type Identifier = Text
 data Value where
   Value :: (Eq a, ToField a, Show a, Typeable a) => a -> Value
 
+instance Show Value where
+  show (Value x) = show x
+
 data Expr =
     Literal Value
   | Column Identifier
@@ -18,6 +21,7 @@ data Expr =
   | PostfixOp Identifier Expr
   | BinaryOp Expr Identifier Expr
   | FunctionCall Identifier [Expr]
+  deriving Show
 
 data CountExpr =
     Star
