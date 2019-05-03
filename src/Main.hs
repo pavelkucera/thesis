@@ -19,14 +19,14 @@ import Thesis.QueryRunner (run)
 import Thesis.ValueGuard (positive, nonNegative)
 
 connStr :: ByteString
-connStr = "host=localhost dbname=postgres user=postgres password=password"
+connStr = "host=localhost dbname=leendert user=leendert password=leendert"
 
 data Person = Person { id :: Int, firstName :: String, lastName :: String, email :: String, gender :: String, salary :: Scientific, birthdate :: Date }
   deriving (Generic, FromRow, Show)
 
 main :: IO ()
 main =
-  let myAst = Select (Average (Column "salary")) "people" (Just (BinaryOp (Column "id") "<" (Literal (Value (200 :: Integer)))))
+  let myAst = Select (Average (Column "salary")) "people" (Just (BinaryOp (Column "id") ">" (Literal (Value (2000 :: Integer)))))
       (qEpsilon, budgetEpsilon, budgetDelta) = case (positive 0.1, nonNegative 1, nonNegative 0) of
         (Right e1, Right e2, Right d) -> (e1, e2, d)
         (Left err, _, _) -> error $ show err
