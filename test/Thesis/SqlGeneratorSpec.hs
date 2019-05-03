@@ -3,7 +3,7 @@
 
 module Thesis.SqlGeneratorSpec (spec) where
 
-import Data.Text (Text, append)
+import Data.Text (Text)
 import Database.PostgreSQL.Simple.Types (Identifier(..))
 import Test.Hspec
 import Test.Hspec.QuickCheck
@@ -34,19 +34,19 @@ spec = do
 
     prop "emits prefix operations correctly" $
       \(identifier :: Text) ->
-        emitExpr (PrefixOp identifier testExpr) `shouldBe` SqlPart (identifier `append` "?") [Parameter ("test" :: String)]
+        emitExpr (PrefixOp identifier testExpr) `shouldBe` SqlPart (identifier <> "?") [Parameter ("test" :: String)]
 
     prop "emits postfix operations correctly" $
       \(identifier :: Text) ->
-        emitExpr (PostfixOp identifier testExpr) `shouldBe` SqlPart ("?" `append` identifier) [Parameter ("test" :: String)] 
+        emitExpr (PostfixOp identifier testExpr) `shouldBe` SqlPart ("?" <> identifier) [Parameter ("test" :: String)] 
 
     prop "emits binary operations correctly" $
       \(identifier :: Text) ->
-        emitExpr (BinaryOp testExpr identifier testExpr) `shouldBe` SqlPart ("?" `append` identifier `append` "?") [testParameter, testParameter]
+        emitExpr (BinaryOp testExpr identifier testExpr) `shouldBe` SqlPart ("?" <> identifier <> "?") [testParameter, testParameter]
 
     prop "emits function calls correctly" $
         \(identifier :: Text) ->
-          emitExpr (FunctionCall identifier [testExpr]) `shouldBe` SqlPart (identifier `append` "(?)") [testParameter]
+          emitExpr (FunctionCall identifier [testExpr]) `shouldBe` SqlPart (identifier <> "(?)") [testParameter]
 
   describe "emitAggregation" $ do
     it "emits average correctly" $
