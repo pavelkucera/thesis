@@ -11,7 +11,7 @@ import Test.QuickCheck.Instances.Text()
 
 import Thesis.Ast
 import Thesis.Query
-import Thesis.SqlGenerator.Internal
+import Thesis.SqlGenerator
 import Thesis.SqlBuilder (SqlPart(..), Parameter(..))
 import Thesis.ValueGuard
 
@@ -38,7 +38,7 @@ spec = do
 
     prop "emits postfix operations correctly" $
       \(identifier :: Text) ->
-        emitExpr (PostfixOp identifier testExpr) `shouldBe` SqlPart ("?" <> identifier) [Parameter ("test" :: String)] 
+        emitExpr (PostfixOp identifier testExpr) `shouldBe` SqlPart ("?" <> identifier) [Parameter ("test" :: String)]
 
     prop "emits binary operations correctly" $
       \(identifier :: Text) ->
