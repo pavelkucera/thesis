@@ -36,6 +36,6 @@ data Select = Select {
 } deriving Show
 
 getSensitivity :: Aggregation -> Double
-getSensitivity (Average) = 1
-getSensitivity (Sum) = 1
-getSensitivity (Count) = 1
+getSensitivity Average = 1
+getSensitivity Sum = 1
+getSensitivity Count = 1
