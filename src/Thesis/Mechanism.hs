@@ -1,4 +1,4 @@
-module Thesis.Mechanism (laplace) where
+module Thesis.Mechanism where
 
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Catch (MonadMask)
