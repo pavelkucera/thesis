@@ -51,3 +51,14 @@ tests:
       - hspec-discover
       - QuickCheck
       - quickcheck-instances
+
+benchmarks:
+  timing:
+    source-dirs:
+      - benchmark
+    main: Main.hs
+    dependencies:
+      - criterion
+      - thesis
+    ghc-options:
+      - -O2
