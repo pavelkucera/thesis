@@ -16,4 +16,4 @@ negateSelect select =
   in select { selectWhere = newWhere }
 
 negateExpr :: Expr -> Expr
-negateExpr e = FunctionCall "NOT" [e]
+negateExpr e = PostfixOp "IS NOT TRUE" e
