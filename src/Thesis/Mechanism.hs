@@ -1,4 +1,4 @@
-module Thesis.Mechanism (laplace, exponential) where
+module Thesis.Mechanism (laplace) where
 
 import Control.Monad.IO.Class (MonadIO)
 import Control.Monad.Catch (MonadMask)
@@ -25,9 +25,6 @@ laplace gen conn query timeout =
   in do
     transactionResult <- runMicrotransaction timeout defaultAns computation
     return (newGen, Right $ transactionResult + noise)
-
-exponential :: (TimeUnit t, MonadIO m, MonadMask m) => StdGen -> Connection -> Query -> t -> m (StdGen, Either String Double)
-exponential = undefined
 
 defaultAnswer :: StdGen -> Query -> (Double, StdGen)
 defaultAnswer gen _ = (1337, gen)
