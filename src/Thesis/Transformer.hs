@@ -3,10 +3,16 @@
 module Thesis.Transformer where
 
 import Thesis.Ast
+import Thesis.Query
 
-negateQuery :: Select -> Select
-negateQuery select =
-  let newWhere = fmap negateExpr $ selectWhere select
+negateQuery :: Query -> Query
+negateQuery query =
+  let newAst = negateSelect $ queryAst query
+  in query { queryAst = newAst }
+
+negateSelect :: Select -> Select
+negateSelect select =
+  let newWhere = negateExpr <$> selectWhere select
   in select { selectWhere = newWhere }
 
 negateExpr :: Expr -> Expr
