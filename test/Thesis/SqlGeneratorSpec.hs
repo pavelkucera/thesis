@@ -14,7 +14,7 @@ import Thesis.SqlGenerator
 import Thesis.SqlBuilder (SqlPart(..), Parameter(..))
 
 testExpr :: Expr
-testExpr = (Literal (Value ("test" :: String)))
+testExpr = Literal (Value ("test" :: String))
 
 testParameter :: Parameter
 testParameter = Parameter ("test" :: String)
@@ -28,7 +28,7 @@ spec = do
 
     prop "emits an identifier for columns" $
       \(identifier :: Text) ->
-        emitExpr (Column $ identifier) `shouldBe` SqlPart "?" [Parameter $ Identifier identifier]
+        emitExpr (Column identifier) `shouldBe` SqlPart "?" [Parameter $ Identifier identifier]
 
     prop "emits prefix operations correctly" $
       \(identifier :: Text) ->
@@ -64,15 +64,15 @@ spec = do
       emitWhere (Just testExpr) `shouldBe` SqlPart "WHERE ?" [testParameter]
 
     it "emits an empty where clause correctly" $
-      emitWhere (Nothing) `shouldBe` mempty
+      emitWhere Nothing `shouldBe` mempty
 
   describe "emitFrom" $
     prop "emits a from clause correctly" $
       \(identifier :: Text) ->
         emitFrom  identifier `shouldBe` SqlPart "FROM ?" [Parameter $ Identifier identifier]
 
-  describe "generateSql" $
+  describe "emitLaplace" $
     it "emits SQL based on a query" $
-      generateSql (Select (Count, Star) "table" $ Just testExpr)
+      emitLaplace (DatabaseSelect (Count, Star) "table" $ Just testExpr)
       `shouldBe` SqlPart "SELECT COUNT(*) FROM ? WHERE ?" [Parameter $ Identifier "table", testParameter]
 

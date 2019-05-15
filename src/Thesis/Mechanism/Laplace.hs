@@ -5,22 +5,22 @@ import Database.PostgreSQL.Simple (Connection)
 import System.Random (StdGen)
 
 import Thesis.Ast
-import Thesis.LaplaceNoise (generate)
+import Thesis.LaplaceNoise
 import Thesis.Query
-import Thesis.SqlGenerator (generateSql)
+import Thesis.SqlGenerator (emitLaplace)
 import Thesis.SqlRunner (executeSql)
 import Thesis.ValueGuard
 
+-- | Runs a DatabaseQuery using the Laplace mechanism
 laplace :: (MonadIO m)
         => StdGen
         -> Connection
-        -> Query
+        -> DatabaseQuery
         -> m (StdGen, Double)
-laplace gen connection query =
-  let ast = queryAst query
-      sql = generateSql ast
-      sensitivity = getSensitivity (fst $ selectAggregation ast)
-      noiseScale = value (queryEpsilon query) / sensitivity
+laplace gen connection (DatabaseQuery e ast@(DatabaseSelect (agg, _) _ _)) =
+  let sql = emitLaplace ast
+      sensitivity = getSensitivity agg
+      noiseScale = value e / sensitivity
       (noise, newGen) = generate gen noiseScale
   in do
     trueAnswer <- executeSql connection sql
