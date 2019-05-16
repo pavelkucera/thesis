@@ -27,9 +27,6 @@ dependencies:
   - postgresql-simple
   - random
   - text
-  - time
-  - time-units
-  - time-out
   - scientific
   - bytestring
 

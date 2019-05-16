@@ -10,10 +10,8 @@ import Test.Hspec.QuickCheck
 import Test.QuickCheck.Instances.Text()
 
 import Thesis.Ast
-import Thesis.Query
-import Thesis.SqlGenerator.Internal
+import Thesis.SqlGenerator
 import Thesis.SqlBuilder (SqlPart(..), Parameter(..))
-import Thesis.ValueGuard
 
 testExpr :: Expr
 testExpr = (Literal (Value ("test" :: String)))
@@ -38,7 +36,7 @@ spec = do
 
     prop "emits postfix operations correctly" $
       \(identifier :: Text) ->
-        emitExpr (PostfixOp identifier testExpr) `shouldBe` SqlPart ("?" <> identifier) [Parameter ("test" :: String)] 
+        emitExpr (PostfixOp identifier testExpr) `shouldBe` SqlPart ("?" <> identifier) [Parameter ("test" :: String)]
 
     prop "emits binary operations correctly" $
       \(identifier :: Text) ->
@@ -50,16 +48,16 @@ spec = do
 
   describe "emitAggregation" $ do
     it "emits average correctly" $
-      emitAggregation (Average testExpr) `shouldBe` SqlPart "AVG(?)" [testParameter]
+      emitAggregation Average testExpr `shouldBe` SqlPart "AVG(?)" [testParameter]
 
     it "emits sum correctly" $
-      emitAggregation (Sum testExpr) `shouldBe` SqlPart "SUM(?)" [testParameter]
+      emitAggregation Sum testExpr `shouldBe` SqlPart "SUM(?)" [testParameter]
 
     it "emits count with an expression correctly" $
-      emitAggregation (Count $ CountExpr testExpr) `shouldBe` SqlPart "COUNT(?)" [testParameter]
+      emitAggregation Count testExpr `shouldBe` SqlPart "COUNT(?)" [testParameter]
 
     it "emits count with a star correctly" $
-      emitAggregation (Count $ Star) `shouldBe` SqlPart "COUNT(*)" []
+      emitAggregation Count Star `shouldBe` SqlPart "COUNT(*)" []
 
   describe "emitWhere" $ do
     it "emits an existing where clause correctly" $
@@ -75,8 +73,6 @@ spec = do
 
   describe "generateSql" $
     it "emits SQL based on a query" $
-      case positive 1 of
-        (Right e) ->
-          generateSql (Query e $ Select (Count Star) "table" $ Just testExpr) `shouldBe`
-          SqlPart "SELECT COUNT(*) FROM ? WHERE ?" [Parameter $ Identifier "table", testParameter]
-        (Left err) -> expectationFailure $ show err
+      generateSql (Select (Count, Star) "table" $ Just testExpr)
+      `shouldBe` SqlPart "SELECT COUNT(*) FROM ? WHERE ?" [Parameter $ Identifier "table", testParameter]
+

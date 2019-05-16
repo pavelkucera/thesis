@@ -11,6 +11,9 @@ type Identifier = Text
 data Value where
   Value :: (Eq a, ToField a, Show a, Typeable a) => a -> Value
 
+instance Show Value where
+  show (Value x) = show x
+
 data Expr =
     Literal Value
   | Column Identifier
@@ -18,23 +21,21 @@ data Expr =
   | PostfixOp Identifier Expr
   | BinaryOp Expr Identifier Expr
   | FunctionCall Identifier [Expr]
+  | Case (Expr, Expr) [(Expr, Expr)] (Maybe Expr)
+  | Null
+  | Star
+  deriving Show
 
-data CountExpr =
-    Star
-  | CountExpr Expr
-
-data Aggregation where
-  Average :: Expr -> Aggregation
-  Sum :: Expr -> Aggregation
-  Count :: CountExpr -> Aggregation
+data Aggregation = Average | Sum | Count
+  deriving Show
 
 data Select = Select {
-  selectAggregation :: Aggregation,
+  selectAggregation :: (Aggregation, Expr),
   selectFrom :: Identifier,
   selectWhere :: Maybe Expr
-}
+} deriving Show
 
 getSensitivity :: Aggregation -> Double
-getSensitivity (Average _) = 1
-getSensitivity (Sum _) = 1
-getSensitivity (Count _) = 1
+getSensitivity Average = 1
+getSensitivity Sum = 1
+getSensitivity Count = 1
