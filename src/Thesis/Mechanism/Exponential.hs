@@ -33,8 +33,30 @@ aggregate :: MonadIO m
 aggregate gen conn e ast resultCount =
   let (sql, params) = toQuery $ emitExponential ast
       aggregation = fst $ selectAggregationS ast
-      aggregator = foldFun aggregation (value e) resultCount
+      aggregator = reducer aggregation resultCount
   in liftIO $ fold conn sql params (emptyState gen) aggregator
+ where
+  reducer :: StreamAggregation
+          -> Double
+          -> AggregationState
+          -> Only (Maybe Scientific)
+          -> IO AggregationState
+  reducer agg len state currentRow =
+    let currentVal = extractValue currentRow
+        (rand1, g1) = random (gen' state) :: (Double, StdGen)
+        (rand2, g2) = randomR (val state, currentVal) g1 :: (Double, StdGen)
+        k = rand1 ** (1 / ((currentVal - val state) * exp (value e * score agg len state)))
+    in return $ AggregationState {
+      key = if k > key state then k else key state,
+      val = if k > key state then rand2 else val state,
+      count = count state + 1,
+      gen' = g2
+    }
+   where
+    extractValue :: Only (Maybe Scientific) -> Double
+    extractValue r = case r of
+      Only (Just v) -> toRealFloat v
+      _ -> 0
 
 countResults :: (MonadIO m) => Connection -> StreamSelect -> m Double
 countResults conn ast =
@@ -65,26 +87,3 @@ emptyState gen = AggregationState {
     count = 0,
     gen' = gen
 }
-
-foldFun :: StreamAggregation
-        -> Epsilon
-        -> Double
-        -> AggregationState
-        -> Only (Maybe Scientific)
-        -> IO AggregationState
-foldFun agg e len state currentRow =
-  let currentVal = extractValue currentRow
-      (rand1, g1) = random (gen' state) :: (Double, StdGen)
-      (rand2, g2) = randomR (val state, currentVal) g1 :: (Double, StdGen)
-      k = rand1 ** (1 / ((currentVal - val state) * exp (e * score agg len state)))
-  in return $ AggregationState {
-    key = if k > key state then k else key state,
-    val = if k > key state then rand2 else val state,
-    count = count state + 1,
-    gen' = g2
-  }
- where
-  extractValue :: Only (Maybe Scientific) -> Double
-  extractValue r = case r of
-    Only (Just v) -> toRealFloat v
-    _ -> 0
