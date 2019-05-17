@@ -26,10 +26,16 @@ data Expr =
   | Star
   deriving Show
 
-data DatabaseAggregation = Sum | Average | Count
+data DatabaseAggregation =
+    Sum
+  | Average
+  | Count
   deriving Show
 
-data StreamAggregation = Median | Min | Max
+data StreamAggregation =
+    Median
+  | Min
+  | Max
   deriving Show
 
 data DatabaseSelect = DatabaseSelect {
