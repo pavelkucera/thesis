@@ -10,7 +10,7 @@ import Thesis.Query
 import Thesis.SqlBuilder
 import Thesis.SqlGenerator
 import Thesis.Types (Epsilon)
-import Thesis.ValueGuard (value)
+import Thesis.ValueGuard (Positive, value)
 
 -- | Runs a StreamQuery using the exponential mechanism
 exponential :: (MonadIO m)
@@ -18,13 +18,23 @@ exponential :: (MonadIO m)
             -> Connection
             -> StreamQuery
             -> m (StdGen, Double)
-exponential gen conn (StreamQuery e ast) =
-  let aggregation = fst $ selectAggregationS ast
-      (sql, params) = toQuery $ emitExponential ast
-  in do
+exponential gen conn (StreamQuery e ast) = do
     resultCount <- countResults conn ast
-    state <- liftIO $ fold conn sql params (emptyState gen) $ foldFun aggregation (value e) resultCount
-    return (gen' state, val state)
+    result <- aggregate gen conn e ast resultCount
+    return (gen' result, val result)
+
+aggregate :: MonadIO m
+          => StdGen
+          -> Connection
+          -> Positive Epsilon
+          -> StreamSelect
+          -> Double
+          -> m AggregationState
+aggregate gen conn e ast resultCount =
+  let (sql, params) = toQuery $ emitExponential ast
+      aggregation = fst $ selectAggregationS ast
+      aggregator = foldFun aggregation (value e) resultCount
+  in liftIO $ fold conn sql params (emptyState gen) aggregator
 
 countResults :: (MonadIO m) => Connection -> StreamSelect -> m Double
 countResults conn ast =
