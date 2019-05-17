@@ -23,7 +23,7 @@ exponential :: (MonadIO m)
 exponential gen conn (Query e ast) = do
     resultCount <- countResults conn ast
     result <- aggregate gen conn e ast resultCount
-    return (gen' result, val result)
+    return (stdGen result, val result)
 
 aggregate :: MonadIO m
           => StdGen
@@ -45,14 +45,14 @@ aggregate gen conn e ast resultCount =
           -> IO AggregationState
   reducer agg len state currentRow =
     let currentVal = extractValue currentRow
-        (rand1, g1) = random (gen' state) :: (Double, StdGen)
+        (rand1, g1) = random (stdGen state) :: (Double, StdGen)
         (rand2, g2) = randomR (val state, currentVal) g1 :: (Double, StdGen)
         k = rand1 ** (1 / ((currentVal - val state) * exp (value e * score agg len state)))
     in return $ AggregationState {
       key = if k > key state then k else key state,
       val = if k > key state then rand2 else val state,
       count = count state + 1,
-      gen' = g2
+      stdGen = g2
     }
 
 countResults :: (MonadIO m) => Connection -> SelectAst StreamAggregation -> m Double
@@ -70,7 +70,7 @@ data AggregationState = AggregationState {
   key :: Double,
   val :: Double,
   count :: Integer,
-  gen' :: StdGen
+  stdGen :: StdGen
 } deriving (Show)
 
 emptyState :: StdGen -> AggregationState
@@ -78,5 +78,5 @@ emptyState gen = AggregationState {
     key = 0,
     val = 0,
     count = 0,
-    gen' = gen
+    stdGen = gen
 }
