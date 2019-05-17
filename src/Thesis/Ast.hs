@@ -28,6 +28,7 @@ data Expr =
 
 data DatabaseAggregation = Sum | Average | Count
   deriving Show
+
 data StreamAggregation = Median | Min | Max
   deriving Show
 
