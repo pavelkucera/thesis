@@ -56,14 +56,9 @@ emptyState gen = State {
     gen' = gen
 }
 
-extract :: Only (Maybe Scientific) -> Double
-extract r = case r of
-  Only (Just v) -> toRealFloat v
-  _ -> 0
-
 foldFun :: StreamAggregation -> Epsilon -> Double -> State -> Only (Maybe Scientific) -> IO State
 foldFun agg e len state currentRow =
-  let currentVal = extract currentRow
+  let currentVal = extractValue currentRow
       (rand1, g') = random (gen' state) :: (Double, StdGen)
       (rand2, g2) = randomR (val state, currentVal) g' :: (Double, StdGen)
       k = rand1 ** (1 / ((currentVal - val state) * exp (e * score agg len state)))
@@ -73,3 +68,8 @@ foldFun agg e len state currentRow =
     count = count state + 1,
     gen' = g2
   }
+ where
+  extractValue :: Only (Maybe Scientific) -> Double
+  extractValue r = case r of
+    Only (Just v) -> toRealFloat v
+    _ -> 0
