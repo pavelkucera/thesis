@@ -1,6 +1,6 @@
 {-# LANGUAGE GADTs #-}
 
-module Thesis.Mechanism.Exponential (exponential) where
+module Thesis.Mechanism.Exponential where
 
 import Control.Monad.IO.Class (MonadIO)
 import Data.Scientific (Scientific)

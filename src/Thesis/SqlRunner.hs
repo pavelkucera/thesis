@@ -1,8 +1,4 @@
-module Thesis.SqlRunner (
-  executeSql,
-  foldSql,
-  extractValue
-) where
+module Thesis.SqlRunner where
 
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Data.Scientific
