@@ -3,7 +3,7 @@
 module Thesis.Mechanism.Exponential (exponential) where
 
 import Control.Monad.IO.Class (MonadIO)
-import Data.Scientific
+import Data.Scientific (Scientific)
 import Database.PostgreSQL.Simple (Connection, Only(..))
 import System.Random (randomR, random, StdGen)
 
