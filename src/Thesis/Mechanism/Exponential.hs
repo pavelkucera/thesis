@@ -59,8 +59,8 @@ emptyState gen = State {
 foldFun :: StreamAggregation -> Epsilon -> Double -> State -> Only (Maybe Scientific) -> IO State
 foldFun agg e len state currentRow =
   let currentVal = extractValue currentRow
-      (rand1, g') = random (gen' state) :: (Double, StdGen)
-      (rand2, g2) = randomR (val state, currentVal) g' :: (Double, StdGen)
+      (rand1, g1) = random (gen' state) :: (Double, StdGen)
+      (rand2, g2) = randomR (val state, currentVal) g1 :: (Double, StdGen)
       k = rand1 ** (1 / ((currentVal - val state) * exp (e * score agg len state)))
   in return $ State {
     key = if k > key state then k else key state,
