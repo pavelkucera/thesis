@@ -19,16 +19,21 @@ exponential :: (MonadIO m)
             -> StreamQuery
             -> m (StdGen, Double)
 exponential gen conn (StreamQuery e ast) =
-  let (countSql, countParams) = toQuery $ emitCount ast
-      aggregation = fst $ selectAggregationS ast
+  let aggregation = fst $ selectAggregationS ast
       (sql, params) = toQuery $ emitExponential ast
   in do
-    countRes <- liftIO $ query conn countSql countParams
-    let len = case countRes of
-                [Only (Just v)] -> toRealFloat v
-                _ -> 0
-    state <- liftIO $ fold conn sql params (emptyState gen) $ foldFun aggregation (value e) len
+    resultCount <- countResults conn ast
+    state <- liftIO $ fold conn sql params (emptyState gen) $ foldFun aggregation (value e) resultCount
     return (gen' state, val state)
+
+countResults :: (MonadIO m) => Connection -> StreamSelect -> m Double
+countResults conn ast =
+  let (countSql, countParams) = toQuery $ emitCount ast
+  in do
+    result <- liftIO $ query conn countSql countParams
+    return $ case result of
+      [Only (Just v)] -> toRealFloat v
+      _ -> 0
 
 score :: StreamAggregation -> (Double -> State -> Double)
 score agg len state = case agg of
