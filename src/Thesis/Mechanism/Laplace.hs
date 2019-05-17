@@ -20,15 +20,15 @@ laplace gen connection (DatabaseQuery e ast@(DatabaseSelect (agg, _) _ _)) =
   let sql = emitLaplace ast
       sensitivity = getSensitivity agg
       noiseScale = value e / sensitivity
-      (noise, newGen) = generate gen noiseScale
+      (noise, newGen) = generateNoise gen noiseScale
   in do
     trueAnswer <- executeSql connection sql
     return (newGen, trueAnswer + noise)
 
 -- | Generates a random variable drawn from a Laplace distribution with the given scale using the
 -- given random number generator.
-generate :: StdGen -> Double -> (Double, StdGen)
-generate gen scale =
+generateNoise :: StdGen -> Double -> (Double, StdGen)
+generateNoise gen scale =
   let (rand, newGen) = random gen     -- value in [0, 1)
       flippedUniform = rand - 0.5     -- value in [-0.5, 0.5)
       uniform = negate flippedUniform -- value in (-0.5, 0.5]
