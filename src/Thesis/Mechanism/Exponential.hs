@@ -35,7 +35,7 @@ countResults conn ast =
       [Only (Just v)] -> toRealFloat v
       _ -> 0
 
-score :: StreamAggregation -> (Double -> AggregationState -> Double)
+score :: StreamAggregation -> Double -> AggregationState -> Double
 score agg len state = case agg of
   Median -> negate $ abs ((len / 2) - fromIntegral (count state))
   Min -> fromIntegral $ count state
