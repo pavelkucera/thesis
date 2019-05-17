@@ -18,8 +18,8 @@ executeSqlList :: (MonadIO m) => Connection -> SqlPart -> m [Double]
 executeSqlList conn sqlPart = do
   let (sqlQuery, sqlParameters) = toQuery sqlPart
   queryResult <- liftIO $ query conn sqlQuery sqlParameters
-  return $ fromOnlyFromJust `map` queryResult
+  return $ extractValue `map` queryResult
 
-fromOnlyFromJust :: Only (Maybe Scientific) -> Double
-fromOnlyFromJust (Only (Just v)) = toRealFloat v
-fromOnlyFromJust _ = 0
+extractValue :: Only (Maybe Scientific) -> Double
+extractValue (Only (Just v)) = toRealFloat v
+extractValue _ = 0
