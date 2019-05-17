@@ -18,17 +18,16 @@ laplace :: (MonadIO m)
         -> m (StdGen, Double)
 laplace gen connection (DatabaseQuery e ast@(DatabaseSelect (agg, _) _ _)) =
   let sql = emitLaplace ast
-      sensitivity = getSensitivity agg
-      noiseScale = value e / sensitivity
+      noiseScale = value e / sensitivity agg
       (noise, newGen) = generateNoise gen noiseScale
   in do
     trueAnswer <- executeSql connection sql
     return (newGen, trueAnswer + noise)
 
-getSensitivity :: DatabaseAggregation -> Double
-getSensitivity Average = 1
-getSensitivity Sum = 1
-getSensitivity Count = 1
+sensitivity :: DatabaseAggregation -> Double
+sensitivity Average = 1
+sensitivity Sum = 1
+sensitivity Count = 1
 
 -- | Generates a random variable drawn from a Laplace distribution with the given scale using the
 -- given random number generator.
