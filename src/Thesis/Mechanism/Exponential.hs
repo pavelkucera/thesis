@@ -4,7 +4,7 @@ module Thesis.Mechanism.Exponential (exponential) where
 
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Data.Scientific
-import Database.PostgreSQL.Simple (Connection, fold, query, Only(..))
+import Database.PostgreSQL.Simple (Connection, query, Only(..))
 import System.Random (randomR, random, StdGen)
 
 import Thesis.Ast
@@ -34,10 +34,10 @@ aggregate :: MonadIO m
           -> Double
           -> m AggregationState
 aggregate gen conn e ast resultCount =
-  let (sql, params) = toQuery $ emitExponential ast
-      aggregation = selectAggregation ast
+  let aggregation = selectAggregation ast
       aggregator = reducer aggregation resultCount
-  in liftIO $ fold conn sql params (emptyState gen) aggregator
+      sql = emitExponential ast
+  in foldSql conn (emptyState gen) aggregator sql
  where
   reducer :: Aggregation StreamAggregation
           -> Double
