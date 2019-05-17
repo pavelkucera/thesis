@@ -5,16 +5,27 @@ module Thesis.SqlGenerator where
 import Thesis.Ast
 import Thesis.SqlBuilder
 
--- | Transforms the Select of a Query into an SqlPart
-generateSql :: Select -> SqlPart
-generateSql (Select (sAgg, aggExpr) sFrom sWhere) =
+emitLaplace :: DatabaseSelect -> SqlPart
+emitLaplace (DatabaseSelect (agg, aggExpr) sFrom sWhere) =
   emitSelect <>
   emit " " <>
-  emitAggregation sAgg aggExpr <>
+  emitAggregation agg aggExpr <>
   emit " " <>
   emitFrom sFrom <>
   emit " " <>
   emitWhere sWhere
+
+emitExponential :: StreamSelect -> SqlPart
+emitExponential (StreamSelect (_, expr) sFrom sWhere) =
+  emitSelect <>
+  emit " " <>
+  emitExpr expr <>
+  emit " " <>
+  emitFrom sFrom <>
+  emit " " <>
+  emitWhere sWhere <>
+  emit " " <>
+  emitOrderBy expr
 
 emitSelect :: SqlPart
 emitSelect = emit "SELECT"
@@ -56,7 +67,7 @@ emitExpr (Case branch branches elseExpr) =
 emitExpr Null = emit "NULL"
 emitExpr Star = emit "*"
 
-emitAggregation :: Aggregation -> Expr -> SqlPart
+emitAggregation :: DatabaseAggregation -> Expr -> SqlPart
 emitAggregation agg expr =
   emit (aggregationName agg) <>
   emit "(" <>
@@ -77,3 +88,18 @@ emitFrom :: Identifier -> SqlPart
 emitFrom identifier =
   emit "FROM " <>
   emitIdentifier identifier
+
+emitOrderBy :: Expr -> SqlPart
+emitOrderBy expr =
+  emit "ORDER BY" <>
+  emitExpr expr
+
+emitCount :: StreamSelect -> SqlPart
+emitCount (StreamSelect (_, aggExpr) sFrom sWhere) =
+  emitSelect <>
+  emit " " <>
+  emitAggregation Count aggExpr <>
+  emit " " <>
+  emitFrom sFrom <>
+  emit " " <>
+  emitWhere sWhere

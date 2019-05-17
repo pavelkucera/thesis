@@ -1,4 +1,4 @@
-module Thesis.SqlRunner (executeSql) where
+module Thesis.SqlRunner (executeSql, executeSqlList) where
 
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Data.Scientific
@@ -13,3 +13,13 @@ executeSql conn sqlPart = do
   return $ case queryResult of
     [Only (Just v)] -> toRealFloat v
     _ -> 0
+
+executeSqlList :: (MonadIO m) => Connection -> SqlPart -> m [Double]
+executeSqlList conn sqlPart = do
+  let (sqlQuery, sqlParameters) = toQuery sqlPart
+  queryResult <- liftIO $ query conn sqlQuery sqlParameters
+  return $ fromOnlyFromJust `map` queryResult
+
+fromOnlyFromJust :: Only (Maybe Scientific) -> Double
+fromOnlyFromJust (Only (Just v)) = toRealFloat v
+fromOnlyFromJust _ = 0

@@ -1,9 +1,9 @@
-module Thesis.LaplaceNoiseSpec (spec) where
+module Thesis.Mechanism.LaplaceSpec (spec) where
 
 import System.Random (mkStdGen)
 import Test.Hspec
 import Test.Hspec.QuickCheck
-import Thesis.LaplaceNoise
+import Thesis.Mechanism.Laplace
 
 spec :: Spec
 spec =
