@@ -16,9 +16,10 @@ laplace :: (MonadIO m)
         -> Connection
         -> DatabaseQuery
         -> m (StdGen, Double)
-laplace gen connection (DatabaseQuery e ast@(DatabaseSelect (agg, _) _ _)) =
+laplace gen connection (DatabaseQuery e ast) =
   let sql = emitLaplace ast
-      noiseScale = value e / sensitivity agg
+      aggregation = fst $ selectAggregationD ast
+      noiseScale = value e / sensitivity aggregation
       (noise, newGen) = generateNoise gen noiseScale
   in do
     trueAnswer <- executeSql connection sql
