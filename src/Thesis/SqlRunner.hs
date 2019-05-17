@@ -1,4 +1,8 @@
-module Thesis.SqlRunner (executeSql, executeSqlList, extractValue) where
+module Thesis.SqlRunner (
+  executeSql,
+  executeSqlList,
+  extractValue
+) where
 
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Data.Scientific
