@@ -25,6 +25,11 @@ laplace gen connection (DatabaseQuery e ast@(DatabaseSelect (agg, _) _ _)) =
     trueAnswer <- executeSql connection sql
     return (newGen, trueAnswer + noise)
 
+getSensitivity :: DatabaseAggregation -> Double
+getSensitivity Average = 1
+getSensitivity Sum = 1
+getSensitivity Count = 1
+
 -- | Generates a random variable drawn from a Laplace distribution with the given scale using the
 -- given random number generator.
 generateNoise :: StdGen -> Double -> (Double, StdGen)

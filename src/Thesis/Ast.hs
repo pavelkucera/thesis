@@ -42,8 +42,3 @@ data StreamSelect = StreamSelect {
   selectFromS :: Identifier,
   selectWhereS :: Maybe Expr
 } deriving Show
-
-getSensitivity :: DatabaseAggregation -> Double
-getSensitivity Average = 1
-getSensitivity Sum = 1
-getSensitivity Count = 1
