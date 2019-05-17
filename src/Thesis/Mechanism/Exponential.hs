@@ -2,14 +2,13 @@
 
 module Thesis.Mechanism.Exponential (exponential) where
 
-import Control.Monad.IO.Class (liftIO, MonadIO)
+import Control.Monad.IO.Class (MonadIO)
 import Data.Scientific
-import Database.PostgreSQL.Simple (Connection, query, Only(..))
+import Database.PostgreSQL.Simple (Connection, Only(..))
 import System.Random (randomR, random, StdGen)
 
 import Thesis.Ast
 import Thesis.Query
-import Thesis.SqlBuilder
 import Thesis.SqlGenerator
 import Thesis.SqlRunner
 import Thesis.Types (Epsilon)
@@ -58,12 +57,8 @@ aggregate gen conn e ast resultCount =
 
 countResults :: (MonadIO m) => Connection -> SelectAst StreamAggregation -> m Double
 countResults conn ast =
-  let (countSql, countParams) = toQuery $ emitCount ast
-  in do
-    result <- liftIO $ query conn countSql countParams
-    return $ case result of
-      [Only (Just v)] -> toRealFloat v
-      _ -> 0
+  let sql = emitCount ast
+  in executeSql conn sql
 
 score :: Aggregation StreamAggregation -> Double -> AggregationState -> Double
 score agg len state = case agg of
