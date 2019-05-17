@@ -1,3 +1,5 @@
+{-# LANGUAGE GADTs #-}
+
 module Thesis.Mechanism.Laplace where
 
 import Control.Monad.IO.Class (MonadIO)
@@ -14,18 +16,18 @@ import Thesis.ValueGuard
 laplace :: (MonadIO m)
         => StdGen
         -> Connection
-        -> DatabaseQuery
+        -> Query DatabaseAggregation
         -> m (StdGen, Double)
-laplace gen connection (DatabaseQuery e ast) =
+laplace gen connection (Query e ast) =
   let sql = emitLaplace ast
-      aggregation = fst $ selectAggregationD ast
+      aggregation = selectAggregation ast
       noiseScale = value e / sensitivity aggregation
       (noise, newGen) = generateNoise gen noiseScale
   in do
     trueAnswer <- executeSql connection sql
     return (newGen, trueAnswer + noise)
 
-sensitivity :: DatabaseAggregation -> Double
+sensitivity :: Aggregation DatabaseAggregation -> Double
 sensitivity Average = 1
 sensitivity Sum = 1
 sensitivity Count = 1

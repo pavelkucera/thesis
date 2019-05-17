@@ -26,7 +26,19 @@ data Expr =
   | Star
   deriving Show
 
-data DatabaseAggregation =
+data DatabaseAggregation
+data StreamAggregation
+
+data Aggregation a where
+  Sum :: Aggregation DatabaseAggregation
+  Average :: Aggregation DatabaseAggregation
+  Count :: Aggregation DatabaseAggregation
+  Median :: Aggregation StreamAggregation
+  Min :: Aggregation StreamAggregation
+  Max :: Aggregation StreamAggregation
+
+-- these have to be split, or use GADTs
+{-data DatabaseAggregation =
     Sum
   | Average
   | Count
@@ -38,14 +50,13 @@ data StreamAggregation =
   | Max
   deriving Show
 
-data DatabaseSelect = DatabaseSelect {
-  selectAggregationD :: (DatabaseAggregation, Expr),
-  selectFromD :: Identifier,
-  selectWhereD :: Maybe Expr
-} deriving Show
+data Aggregation =
+    DatabaseAggregation DatabaseAggregation
+  | StreamAggregation StreamAggregation-}
 
-data StreamSelect = StreamSelect {
-  selectAggregationS :: (StreamAggregation, Expr),
-  selectFromS :: Identifier,
-  selectWhereS :: Maybe Expr
-} deriving Show
+data SelectAst a = SelectAst {
+  selectAggregation :: Aggregation a,
+  selectExpr :: Expr,
+  selectFrom :: Identifier,
+  selectWhere :: Maybe Expr
+}

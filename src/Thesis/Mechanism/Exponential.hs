@@ -1,3 +1,5 @@
+{-# LANGUAGE GADTs #-}
+
 module Thesis.Mechanism.Exponential (exponential) where
 
 import Control.Monad.IO.Class (liftIO, MonadIO)
@@ -16,9 +18,9 @@ import Thesis.ValueGuard (Positive, value)
 exponential :: (MonadIO m)
             => StdGen
             -> Connection
-            -> StreamQuery
+            -> Query StreamAggregation
             -> m (StdGen, Double)
-exponential gen conn (StreamQuery e ast) = do
+exponential gen conn (Query e ast) = do
     resultCount <- countResults conn ast
     result <- aggregate gen conn e ast resultCount
     return (gen' result, val result)
@@ -27,16 +29,16 @@ aggregate :: MonadIO m
           => StdGen
           -> Connection
           -> Positive Epsilon
-          -> StreamSelect
+          -> SelectAst StreamAggregation
           -> Double
           -> m AggregationState
 aggregate gen conn e ast resultCount =
   let (sql, params) = toQuery $ emitExponential ast
-      aggregation = fst $ selectAggregationS ast
+      aggregation = selectAggregation ast
       aggregator = reducer aggregation resultCount
   in liftIO $ fold conn sql params (emptyState gen) aggregator
  where
-  reducer :: StreamAggregation
+  reducer :: Aggregation StreamAggregation
           -> Double
           -> AggregationState
           -> Only (Maybe Scientific)
@@ -58,7 +60,7 @@ aggregate gen conn e ast resultCount =
       Only (Just v) -> toRealFloat v
       _ -> 0
 
-countResults :: (MonadIO m) => Connection -> StreamSelect -> m Double
+countResults :: (MonadIO m) => Connection -> SelectAst StreamAggregation -> m Double
 countResults conn ast =
   let (countSql, countParams) = toQuery $ emitCount ast
   in do
@@ -67,7 +69,7 @@ countResults conn ast =
       [Only (Just v)] -> toRealFloat v
       _ -> 0
 
-score :: StreamAggregation -> Double -> AggregationState -> Double
+score :: Aggregation StreamAggregation -> Double -> AggregationState -> Double
 score agg len state = case agg of
   Median -> negate $ abs ((len / 2) - fromIntegral (count state))
   Min -> fromIntegral $ count state
