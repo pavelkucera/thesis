@@ -14,14 +14,14 @@ import Thesis.ValueGuard (value)
 
 -- | Runs a StreamQuery using the exponential mechanism
 exponential :: (MonadIO m)
-               => StdGen
-               -> Connection
-               -> StreamQuery
-               -> m (StdGen, Double)
+            => StdGen
+            -> Connection
+            -> StreamQuery
+            -> m (StdGen, Double)
 exponential gen conn (StreamQuery e ast@(StreamSelect (agg, _) _ _)) =
   let (countSql, countParams) = toQuery $ emitCount ast
       (sql, params) = toQuery $ emitExponential ast
-  in do 
+  in do
     countRes <- liftIO $ query conn countSql countParams
     let len = case countRes of
                 [Only (Just v)] -> toRealFloat v
