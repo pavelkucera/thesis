@@ -24,7 +24,9 @@ dependencies:
   - bytestring
   - deepseq
   - exceptions
+  - megaparsec
   - mtl
+  - parser-combinators
   - postgresql-simple
   - random
   - text
@@ -49,5 +51,6 @@ tests:
     dependencies:
       - hspec
       - hspec-discover
+      - hspec-megaparsec
       - QuickCheck
       - quickcheck-instances
