@@ -22,7 +22,7 @@ import Data.Typeable (Typeable, cast)
 import Database.PostgreSQL.Simple.Types (Identifier(..), Query(..))
 import Database.PostgreSQL.Simple.ToField (ToField(..))
 
--- | An parameter which is to be escaped before sending to the database.
+-- | A parameter which is to be escaped before sending to the database.
 data Parameter where
   Parameter :: (Eq a, Show a, ToField a, Typeable a) => a -> Parameter
 
