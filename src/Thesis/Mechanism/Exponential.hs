@@ -14,7 +14,7 @@ import Thesis.SqlRunner
 import Thesis.Types (Epsilon)
 import Thesis.ValueGuard (Positive, value)
 
--- | Runs a StreamQuery using the exponential mechanism
+-- | Runs a query using the exponential mechanism
 exponential :: (MonadIO m)
             => StdGen
             -> Connection
