@@ -4,7 +4,7 @@ import Control.Monad.IO.Class (liftIO, MonadIO)
 import Data.Scientific
 import Database.PostgreSQL.Simple (Connection, query, fold, Only(..), FromRow)
 
-import Thesis.SqlBuilder
+import Thesis.Sql.Builder
 
 executeSql :: (MonadIO m) => Connection -> SqlPart -> m Double
 executeSql conn sqlPart = do

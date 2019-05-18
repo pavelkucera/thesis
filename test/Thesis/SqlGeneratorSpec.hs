@@ -11,7 +11,7 @@ import Test.QuickCheck.Instances.Text()
 
 import Thesis.Ast
 import Thesis.SqlGenerator
-import Thesis.SqlBuilder (SqlPart(..), Parameter(..))
+import Thesis.Sql.Builder (SqlPart(..), Parameter(..))
 
 testExpr :: Expr
 testExpr = Literal (Value ("test" :: String))

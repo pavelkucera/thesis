@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Thesis.SqlBuilderSpec (spec) where
+module Thesis.Sql.BuilderSpec (spec) where
 
 import Data.Text (Text)
 import qualified Data.Text as T (concat)
@@ -8,7 +8,8 @@ import Database.PostgreSQL.Simple.Types (Identifier(..))
 import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.QuickCheck.Instances.Text()
-import Thesis.SqlBuilder
+
+import Thesis.Sql.Builder
 
 spec :: Spec
 spec = do

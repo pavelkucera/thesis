@@ -1,7 +1,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Thesis.SqlBuilder (
+module Thesis.Sql.Builder (
   -- * Usage
   -- $use
 
