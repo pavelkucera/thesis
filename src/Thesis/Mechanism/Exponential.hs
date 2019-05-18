@@ -49,8 +49,8 @@ aggregate gen conn e ast resultCount =
         (rand2, g2) = randomR (val state, currentVal) g1 :: (Double, StdGen)
         k = rand1 ** (1 / ((currentVal - val state) * exp (value e * score agg len state)))
     in return $ AggregationState {
-      key = if k > key state then k else key state,
-      val = if k > key state then rand2 else val state,
+      index = if k > index state then k else index state,
+      val = if k > index state then rand2 else val state,
       count = count state + 1,
       stdGen = g2
     }
@@ -67,7 +67,7 @@ score agg len state = case agg of
   Max -> negate $ fromIntegral $ count state
 
 data AggregationState = AggregationState {
-  key :: Double,
+  index :: Double,
   val :: Double,
   count :: Integer,
   stdGen :: StdGen
@@ -75,7 +75,7 @@ data AggregationState = AggregationState {
 
 emptyState :: StdGen -> AggregationState
 emptyState gen = AggregationState {
-  key = 0,
+  index = 0,
   val = 0,
   count = 0,
   stdGen = gen
