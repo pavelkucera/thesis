@@ -37,23 +37,6 @@ data Aggregation a where
   Min :: Aggregation StreamAggregation
   Max :: Aggregation StreamAggregation
 
--- these have to be split, or use GADTs
-{-data DatabaseAggregation =
-    Sum
-  | Average
-  | Count
-  deriving Show
-
-data StreamAggregation =
-    Median
-  | Min
-  | Max
-  deriving Show
-
-data Aggregation =
-    DatabaseAggregation DatabaseAggregation
-  | StreamAggregation StreamAggregation-}
-
 data SelectAst a = SelectAst {
   selectAggregation :: Aggregation a,
   selectExpr :: Expr,
