@@ -8,10 +8,10 @@ import Database.PostgreSQL.Simple
 import Database.PostgreSQL.Simple.Time
 import System.Random
 
-import Thesis.Ast
+import Thesis.Query.Ast
 import Thesis.Composition.Simple
-import Thesis.Query
-import Thesis.QueryRunner (run)
+import Thesis.Query.Query
+import Thesis.Query.Runner (run)
 import Thesis.ValueGuard (positive, nonNegative)
 
 connStr :: ByteString

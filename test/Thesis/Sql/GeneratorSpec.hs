@@ -9,7 +9,7 @@ import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.QuickCheck.Instances.Text()
 
-import Thesis.Ast
+import Thesis.Query.Ast
 import Thesis.Sql.Generator
 import Thesis.Sql.Builder (SqlPart(..), Parameter(..))
 

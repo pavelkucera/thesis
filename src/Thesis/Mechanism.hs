@@ -6,8 +6,8 @@ import System.Random (StdGen)
 
 import Thesis.Mechanism.Laplace (laplace)
 import Thesis.Mechanism.Exponential (exponential)
-import Thesis.Query
-import Thesis.Ast
+import Thesis.Query.Query
+import Thesis.Query.Ast
 import Thesis.ValueGuard
 import Thesis.Types
 

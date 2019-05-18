@@ -4,7 +4,7 @@
 module Thesis.Sql.Generator where
 
 import Data.Text (Text)
-import Thesis.Ast
+import Thesis.Query.Ast
 import Thesis.Sql.Builder
 
 emitLaplace :: SelectAst DatabaseAggregation -> SqlPart

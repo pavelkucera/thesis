@@ -7,8 +7,8 @@ import Data.Scientific (Scientific)
 import Database.PostgreSQL.Simple (Connection, Only(..))
 import System.Random (randomR, random, StdGen)
 
-import Thesis.Ast
-import Thesis.Query
+import Thesis.Query.Ast
+import Thesis.Query.Query
 import Thesis.Sql.Generator
 import Thesis.Sql.Runner
 import Thesis.Types (Epsilon)
