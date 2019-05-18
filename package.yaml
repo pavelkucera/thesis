@@ -21,14 +21,14 @@ ghc-options:
 
 dependencies:
   - base >= 4.9 && < 5
-  - mtl
+  - bytestring
   - deepseq
   - exceptions
+  - mtl
   - postgresql-simple
   - random
   - text
   - scientific
-  - bytestring
 
 library:
   source-dirs: src
