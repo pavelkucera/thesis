@@ -1,4 +1,4 @@
-module Thesis.SqlRunner where
+module Thesis.Sql.Runner where
 
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Data.Scientific
