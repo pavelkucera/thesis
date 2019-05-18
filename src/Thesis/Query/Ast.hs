@@ -19,7 +19,7 @@ data Expr =
   | Column Identifier
   | PrefixOp Identifier Expr
   | PostfixOp Identifier Expr
-  | BinaryOp Expr Identifier Expr
+  | BinaryOp Identifier Expr Expr
   | FunctionCall Identifier [Expr]
   | Case (Expr, Expr) [(Expr, Expr)] (Maybe Expr)
   | Null
