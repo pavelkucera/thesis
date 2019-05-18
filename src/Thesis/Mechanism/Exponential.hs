@@ -9,7 +9,7 @@ import System.Random (randomR, random, StdGen)
 
 import Thesis.Ast
 import Thesis.Query
-import Thesis.SqlGenerator
+import Thesis.Sql.Generator
 import Thesis.SqlRunner
 import Thesis.Types (Epsilon)
 import Thesis.ValueGuard (Positive, value)

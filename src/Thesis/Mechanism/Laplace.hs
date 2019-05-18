@@ -8,7 +8,7 @@ import System.Random (StdGen, random)
 
 import Thesis.Ast
 import Thesis.Query
-import Thesis.SqlGenerator (emitLaplace)
+import Thesis.Sql.Generator (emitLaplace)
 import Thesis.SqlRunner (executeSql)
 import Thesis.ValueGuard
 

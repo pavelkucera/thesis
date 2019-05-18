@@ -1,7 +1,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Thesis.SqlGenerator where
+module Thesis.Sql.Generator where
 
 import Data.Text (Text)
 import Thesis.Ast
