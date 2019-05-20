@@ -1,69 +1,82 @@
-module Thesis.Mechanism.Exponential (exponential) where
+{-# LANGUAGE GADTs #-}
 
-import Control.Monad.IO.Class (liftIO, MonadIO)
-import Data.Scientific
-import Database.PostgreSQL.Simple (Connection, fold, query, Only(..))
+module Thesis.Mechanism.Exponential where
+
+import Control.Monad.IO.Class (MonadIO)
+import Data.Scientific (Scientific)
+import Database.PostgreSQL.Simple (Connection, Only(..))
 import System.Random (randomR, random, StdGen)
 
 import Thesis.Ast
 import Thesis.Query
-import Thesis.SqlBuilder
 import Thesis.SqlGenerator
+import Thesis.SqlRunner
 import Thesis.Types (Epsilon)
-import Thesis.ValueGuard (value)
+import Thesis.ValueGuard (Positive, value)
 
--- | Runs a StreamQuery using the exponential mechanism
+-- | Runs a query using the exponential mechanism
 exponential :: (MonadIO m)
-               => StdGen
-               -> Connection
-               -> StreamQuery
-               -> m (StdGen, Double)
-exponential gen conn (StreamQuery e ast@(StreamSelect (agg, _) _ _)) =
-  let (countSql, countParams) = toQuery $ emitCount ast
-      (sql, params) = toQuery $ emitExponential ast
-  in do 
-    countRes <- liftIO $ query conn countSql countParams
-    let len = case countRes of
-                [Only (Just v)] -> toRealFloat v
-                _ -> 0
-    state <- liftIO $ fold conn sql params (emptyState gen) $ foldFun agg (value e) len
-    return (gen' state, val state)
+            => StdGen
+            -> Connection
+            -> Query StreamAggregation
+            -> m (StdGen, Double)
+exponential gen conn (Query e ast) = do
+    resultCount <- countResults conn ast
+    result <- aggregate gen conn e ast resultCount
+    return (stdGen result, val result)
 
-score :: StreamAggregation -> (Double -> State -> Double)
+aggregate :: MonadIO m
+          => StdGen
+          -> Connection
+          -> Positive Epsilon
+          -> SelectAst StreamAggregation
+          -> Double
+          -> m AggregationState
+aggregate gen conn e ast resultCount =
+  let aggregation = selectAggregation ast
+      aggregator = reducer aggregation resultCount
+      sql = emitExponential ast
+  in foldSql conn (emptyState gen) aggregator sql
+ where
+  reducer :: Aggregation StreamAggregation
+          -> Double
+          -> AggregationState
+          -> Only (Maybe Scientific)
+          -> IO AggregationState
+  reducer agg len state currentRow =
+    let currentVal = extractValue currentRow
+        (rand1, g1) = random (stdGen state) :: (Double, StdGen)
+        (rand2, g2) = randomR (val state, currentVal) g1 :: (Double, StdGen)
+        k = rand1 ** (1 / ((currentVal - val state) * exp (value e * score agg len state)))
+    in return $ AggregationState {
+      index = if k > index state then k else index state,
+      val = if k > index state then rand2 else val state,
+      count = count state + 1,
+      stdGen = g2
+    }
+
+countResults :: (MonadIO m) => Connection -> SelectAst StreamAggregation -> m Double
+countResults conn ast =
+  let sql = emitCount ast
+  in executeSql conn sql
+
+score :: Aggregation StreamAggregation -> Double -> AggregationState -> Double
 score agg len state = case agg of
   Median -> negate $ abs ((len / 2) - fromIntegral (count state))
   Min -> fromIntegral $ count state
   Max -> negate $ fromIntegral $ count state
 
-data State = State {
-  key :: Double,
+data AggregationState = AggregationState {
+  index :: Double,
   val :: Double,
   count :: Integer,
-  gen' :: StdGen
+  stdGen :: StdGen
 } deriving (Show)
 
-emptyState :: StdGen -> State
-emptyState gen = State {
-    key = 0,
-    val = 0,
-    count = 0,
-    gen' = gen
+emptyState :: StdGen -> AggregationState
+emptyState gen = AggregationState {
+  index = 0,
+  val = 0,
+  count = 0,
+  stdGen = gen
 }
-
-extract :: Only (Maybe Scientific) -> Double
-extract r = case r of
-  Only (Just v) -> toRealFloat v
-  _ -> 0
-
-foldFun :: StreamAggregation -> Epsilon -> Double -> State -> Only (Maybe Scientific) -> IO State
-foldFun agg e len state currentRow =
-  let currentVal = extract currentRow
-      (rand1, g') = random (gen' state) :: (Double, StdGen)
-      (rand2, g2) = randomR (val state, currentVal) g' :: (Double, StdGen)
-      k = rand1 ** (1 / ((currentVal - val state) * exp (e * score agg len state)))
-  in return $ State {
-    key = if k > key state then k else key state,
-    val = if k > key state then rand2 else val state,
-    count = count state + 1,
-    gen' = g2
-  }

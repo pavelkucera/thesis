@@ -26,24 +26,20 @@ data Expr =
   | Star
   deriving Show
 
-data DatabaseAggregation = Sum | Average | Count
-  deriving Show
-data StreamAggregation = Median | Min | Max
-  deriving Show
+data DatabaseAggregation
+data StreamAggregation
 
-data DatabaseSelect = DatabaseSelect {
-  selectAggregationD :: (DatabaseAggregation, Expr),
-  selectFromD :: Identifier,
-  selectWhereD :: Maybe Expr
-} deriving Show
+data Aggregation a where
+  Sum :: Aggregation DatabaseAggregation
+  Average :: Aggregation DatabaseAggregation
+  Count :: Aggregation DatabaseAggregation
+  Median :: Aggregation StreamAggregation
+  Min :: Aggregation StreamAggregation
+  Max :: Aggregation StreamAggregation
 
-data StreamSelect = StreamSelect {
-  selectAggregationS :: (StreamAggregation, Expr),
-  selectFromS :: Identifier,
-  selectWhereS :: Maybe Expr
-} deriving Show
-
-getSensitivity :: DatabaseAggregation -> Double
-getSensitivity Average = 1
-getSensitivity Sum = 1
-getSensitivity Count = 1
+data SelectAst a = SelectAst {
+  selectAggregation :: Aggregation a,
+  selectExpr :: Expr,
+  selectFrom :: Identifier,
+  selectWhere :: Maybe Expr
+}

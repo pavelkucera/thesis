@@ -6,12 +6,13 @@ import Test.Hspec.QuickCheck
 import Thesis.Mechanism.Laplace
 
 spec :: Spec
-spec =
+spec = do
   describe "uniformToLaplace" $ do
     prop "always transforms 0 into 0" $
       \scale mean -> uniformToLaplace scale mean 0 `shouldBe` mean
 
+  describe "generateNoise" $ do
     prop "generates noise" $
       \seed scale ->
-        let (noise, _) = generate (mkStdGen seed) scale
+        let (noise, _) = generateNoise (mkStdGen seed) scale
         in abs noise `shouldSatisfy` (>= 0)

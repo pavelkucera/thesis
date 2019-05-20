@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Thesis.QueryRunner where
 
 import Control.Monad.IO.Class (MonadIO)
@@ -5,22 +7,18 @@ import Database.PostgreSQL.Simple (Connection)
 import System.Random (StdGen)
 
 import Thesis.Composition.PrivacyFilter
-import Thesis.Mechanism.Exponential (exponential)
-import Thesis.Mechanism.Laplace (laplace)
+import Thesis.Mechanism
 import Thesis.Query
-import Thesis.ValueGuard (zero)
 
-run :: (MonadIO m, PrivacyFilter p)
+run :: (MonadIO m, PrivacyFilter p, Mechanism a)
     => StdGen
     -> Connection
     -> p
-    -> Query
+    -> Query a
     -> m (p, StdGen, Either BudgetDepleted Double)
 run gen conn privacyFilter query =
-  case subtractBudget privacyFilter (queryEpsilon query, zero) of
+  case subtractBudget privacyFilter (queryEpsilon query, delta query) of
     Left err -> return (privacyFilter, gen, Left err)
     Right newState -> do
-      (newGen, res) <- case query of
-        DQuery q -> laplace gen conn q
-        SQuery q -> exponential gen conn q
+      (newGen, res) <- perform gen conn query
       return (newState, newGen, Right res)

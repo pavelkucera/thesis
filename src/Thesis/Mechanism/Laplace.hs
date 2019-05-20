@@ -1,3 +1,5 @@
+{-# LANGUAGE GADTs #-}
+
 module Thesis.Mechanism.Laplace where
 
 import Control.Monad.IO.Class (MonadIO)
@@ -14,21 +16,26 @@ import Thesis.ValueGuard
 laplace :: (MonadIO m)
         => StdGen
         -> Connection
-        -> DatabaseQuery
+        -> Query DatabaseAggregation
         -> m (StdGen, Double)
-laplace gen connection (DatabaseQuery e ast@(DatabaseSelect (agg, _) _ _)) =
+laplace gen connection (Query e ast) =
   let sql = emitLaplace ast
-      sensitivity = getSensitivity agg
-      noiseScale = value e / sensitivity
-      (noise, newGen) = generate gen noiseScale
+      aggregation = selectAggregation ast
+      noiseScale = value e / sensitivity aggregation
+      (noise, newGen) = generateNoise gen noiseScale
   in do
     trueAnswer <- executeSql connection sql
     return (newGen, trueAnswer + noise)
 
+sensitivity :: Aggregation DatabaseAggregation -> Double
+sensitivity Average = 1
+sensitivity Sum = 1
+sensitivity Count = 1
+
 -- | Generates a random variable drawn from a Laplace distribution with the given scale using the
 -- given random number generator.
-generate :: StdGen -> Double -> (Double, StdGen)
-generate gen scale =
+generateNoise :: StdGen -> Double -> (Double, StdGen)
+generateNoise gen scale =
   let (rand, newGen) = random gen     -- value in [0, 1)
       flippedUniform = rand - 0.5     -- value in [-0.5, 0.5)
       uniform = negate flippedUniform -- value in (-0.5, 0.5]

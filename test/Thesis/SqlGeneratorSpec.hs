@@ -73,6 +73,6 @@ spec = do
 
   describe "emitLaplace" $
     it "emits SQL based on a query" $
-      emitLaplace (DatabaseSelect (Count, Star) "table" $ Just testExpr)
+      emitLaplace (SelectAst Count Star "table" $ Just testExpr)
       `shouldBe` SqlPart "SELECT COUNT(*) FROM ? WHERE ?" [Parameter $ Identifier "table", testParameter]
 

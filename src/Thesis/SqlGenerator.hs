@@ -1,12 +1,14 @@
+{-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Thesis.SqlGenerator where
 
+import Data.Text (Text)
 import Thesis.Ast
 import Thesis.SqlBuilder
 
-emitLaplace :: DatabaseSelect -> SqlPart
-emitLaplace (DatabaseSelect (agg, aggExpr) sFrom sWhere) =
+emitLaplace :: SelectAst DatabaseAggregation -> SqlPart
+emitLaplace (SelectAst agg aggExpr sFrom sWhere) =
   emitSelect <>
   emit " " <>
   emitAggregation agg aggExpr <>
@@ -15,8 +17,8 @@ emitLaplace (DatabaseSelect (agg, aggExpr) sFrom sWhere) =
   emit " " <>
   emitWhere sWhere
 
-emitExponential :: StreamSelect -> SqlPart
-emitExponential (StreamSelect (_, expr) sFrom sWhere) =
+emitExponential :: SelectAst StreamAggregation -> SqlPart
+emitExponential (SelectAst _ expr sFrom sWhere) =
   emitSelect <>
   emit " " <>
   emitExpr expr <>
@@ -67,13 +69,14 @@ emitExpr (Case branch branches elseExpr) =
 emitExpr Null = emit "NULL"
 emitExpr Star = emit "*"
 
-emitAggregation :: DatabaseAggregation -> Expr -> SqlPart
+emitAggregation :: Aggregation DatabaseAggregation -> Expr -> SqlPart
 emitAggregation agg expr =
   emit (aggregationName agg) <>
   emit "(" <>
   emitExpr expr <>
   emit ")"
  where
+  aggregationName :: Aggregation DatabaseAggregation -> Text
   aggregationName Average = "AVG"
   aggregationName Sum = "SUM"
   aggregationName Count = "COUNT"
@@ -94,8 +97,8 @@ emitOrderBy expr =
   emit "ORDER BY" <>
   emitExpr expr
 
-emitCount :: StreamSelect -> SqlPart
-emitCount (StreamSelect (_, aggExpr) sFrom sWhere) =
+emitCount :: SelectAst StreamAggregation -> SqlPart
+emitCount (SelectAst _ aggExpr sFrom sWhere) =
   emitSelect <>
   emit " " <>
   emitAggregation Count aggExpr <>
