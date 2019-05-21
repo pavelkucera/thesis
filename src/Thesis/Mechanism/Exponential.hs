@@ -8,7 +8,6 @@ import Database.PostgreSQL.Simple (Connection, Only(..))
 import System.Random (randomR, random, StdGen)
 
 import Thesis.Query.Ast
-import Thesis.Query.Query
 import Thesis.Sql.Generator
 import Thesis.Sql.Runner
 import Thesis.Types (Epsilon)
@@ -18,27 +17,29 @@ import Thesis.ValueGuard (Positive, value)
 exponential :: (MonadIO m)
             => StdGen
             -> Connection
-            -> Query StreamAggregation
+            -> Positive Epsilon
+            -> StreamAggregation
+            -> AggregationAst
             -> m (StdGen, Double)
-exponential gen conn (Query e ast) = do
+exponential gen conn e aggregation ast = do
     resultCount <- countResults conn ast
-    result <- aggregate gen conn e ast resultCount
+    result <- aggregate gen conn e aggregation ast resultCount
     return (stdGen result, val result)
 
 aggregate :: MonadIO m
           => StdGen
           -> Connection
           -> Positive Epsilon
-          -> SelectAst StreamAggregation
+          -> StreamAggregation
+          -> AggregationAst
           -> Double
           -> m AggregationState
-aggregate gen conn e ast resultCount =
-  let aggregation = selectAggregation ast
-      aggregator = reducer aggregation resultCount
-      sql = emitExponential ast
+aggregate gen conn e aggregation ast resultCount =
+  let aggregator = reducer aggregation resultCount
+      sql = emitExponential aggregation ast
   in foldSql conn (emptyState gen) aggregator sql
  where
-  reducer :: Aggregation StreamAggregation
+  reducer :: StreamAggregation
           -> Double
           -> AggregationState
           -> Only (Maybe Scientific)
@@ -55,16 +56,16 @@ aggregate gen conn e ast resultCount =
       stdGen = g2
     }
 
-countResults :: (MonadIO m) => Connection -> SelectAst StreamAggregation -> m Double
+countResults :: (MonadIO m) => Connection -> AggregationAst -> m Double
 countResults conn ast =
   let sql = emitCount ast
   in executeSql conn sql
 
-score :: Aggregation StreamAggregation -> Double -> AggregationState -> Double
+score :: StreamAggregation -> Double -> AggregationState -> Double
 score agg len state = case agg of
-  Median -> negate $ abs ((len / 2) - fromIntegral (count state))
-  Min -> fromIntegral $ count state
-  Max -> negate $ fromIntegral $ count state
+  Median{} -> negate $ abs ((len / 2) - fromIntegral (count state))
+  Min{} -> fromIntegral $ count state
+  Max{} -> negate $ fromIntegral $ count state
 
 data AggregationState = AggregationState {
   index :: Double,

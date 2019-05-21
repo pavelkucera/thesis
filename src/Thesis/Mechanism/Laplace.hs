@@ -7,27 +7,28 @@ import Database.PostgreSQL.Simple (Connection)
 import System.Random (StdGen, random)
 
 import Thesis.Query.Ast
-import Thesis.Query.Query
 import Thesis.Sql.Generator (emitLaplace)
 import Thesis.Sql.Runner (executeSql)
+import Thesis.Types
 import Thesis.ValueGuard
 
 -- | Runs a DatabaseQuery using the Laplace mechanism
 laplace :: (MonadIO m)
         => StdGen
         -> Connection
-        -> Query DatabaseAggregation
+        -> Positive Epsilon
+        -> DatabaseAggregation
+        -> AggregationAst
         -> m (StdGen, Double)
-laplace gen connection (Query e ast) =
-  let sql = emitLaplace ast
-      aggregation = selectAggregation ast
+laplace gen connection e aggregation ast  =
+  let sql = emitLaplace aggregation ast
       noiseScale = sensitivity aggregation / value e
       (noise, newGen) = generateNoise gen noiseScale
   in do
     trueAnswer <- executeSql connection sql
     return (newGen, trueAnswer + noise)
 
-sensitivity :: Aggregation DatabaseAggregation -> Double
+sensitivity :: DatabaseAggregation -> Double
 sensitivity Average = 1
 sensitivity Sum = 1
 sensitivity Count = 1

@@ -4,7 +4,7 @@ import Thesis.Query.Ast
 import Thesis.Types
 import Thesis.ValueGuard
 
-data Query a = Query {
+data Query = Query {
   queryEpsilon :: Positive Epsilon,
-  queryAst :: SelectAst a
+  queryAst :: Aggregation
 }
