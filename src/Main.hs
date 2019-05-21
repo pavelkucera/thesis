@@ -23,7 +23,7 @@ data Person = Person { id :: Int, firstName :: String, lastName :: String, email
 
 main :: IO ()
 main =
-  let myAst = SelectAst Median (Column "salary") "people" (Just (BinaryOp (Column "id") ">" (Literal (Value (0 :: Integer)))))
+  let myAst = StreamAggregation Median $ AggregationAst (Column "salary") "people" (Just (BinaryOp ">" (Column "id") (Literal (Value (0 :: Integer)))))
       (qEpsilon, budgetEpsilon, budgetDelta) = case (positive 0.1, nonNegative 1, nonNegative 0) of
         (Right e1, Right e2, Right d) -> (e1, e2, d)
         (Left err, _, _) -> error $ show err

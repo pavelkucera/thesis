@@ -21,14 +21,16 @@ ghc-options:
 
 dependencies:
   - base >= 4.9 && < 5
-  - mtl
+  - bytestring
   - deepseq
   - exceptions
+  - megaparsec
+  - mtl
+  - parser-combinators
   - postgresql-simple
   - random
   - text
   - scientific
-  - bytestring
 
 library:
   source-dirs: src
@@ -49,5 +51,6 @@ tests:
     dependencies:
       - hspec
       - hspec-discover
+      - hspec-megaparsec
       - QuickCheck
       - quickcheck-instances

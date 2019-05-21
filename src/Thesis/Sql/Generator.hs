@@ -1,4 +1,3 @@
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Thesis.Sql.Generator where
@@ -7,18 +6,18 @@ import Data.Text (Text)
 import Thesis.Query.Ast
 import Thesis.Sql.Builder
 
-emitLaplace :: SelectAst DatabaseAggregation -> SqlPart
-emitLaplace (SelectAst agg aggExpr sFrom sWhere) =
+emitLaplace :: DatabaseAggregation -> AggregationAst -> SqlPart
+emitLaplace aggregation (AggregationAst expr sFrom sWhere) =
   emitSelect <>
   emit " " <>
-  emitAggregation agg aggExpr <>
+  emitAggregation aggregation expr <>
   emit " " <>
   emitFrom sFrom <>
   emit " " <>
   emitWhere sWhere
 
-emitExponential :: SelectAst StreamAggregation -> SqlPart
-emitExponential (SelectAst _ expr sFrom sWhere) =
+emitExponential :: StreamAggregation -> AggregationAst -> SqlPart
+emitExponential _ (AggregationAst expr sFrom sWhere) =
   emitSelect <>
   emit " " <>
   emitExpr expr <>
@@ -41,10 +40,10 @@ emitExpr (PrefixOp identifier expr) =
 emitExpr (PostfixOp identifier expr) =
   emitExpr expr <>
   emit identifier
-emitExpr (BinaryOp expr1 identifier expr2) =
-  emitExpr expr1 <>
+emitExpr (BinaryOp identifier left right) =
+  emitExpr left <>
   emit identifier <>
-  emitExpr expr2
+  emitExpr right
 emitExpr (FunctionCall identifier exprs) =
   emit identifier <>
   emit "(" <>
@@ -69,14 +68,14 @@ emitExpr (Case branch branches elseExpr) =
 emitExpr Null = emit "NULL"
 emitExpr Star = emit "*"
 
-emitAggregation :: Aggregation DatabaseAggregation -> Expr -> SqlPart
-emitAggregation agg expr =
-  emit (aggregationName agg) <>
+emitAggregation :: DatabaseAggregation -> Expr -> SqlPart
+emitAggregation aggregation expr =
+  emit (aggregationName aggregation) <>
   emit "(" <>
   emitExpr expr <>
   emit ")"
  where
-  aggregationName :: Aggregation DatabaseAggregation -> Text
+  aggregationName :: DatabaseAggregation -> Text
   aggregationName Average = "AVG"
   aggregationName Sum = "SUM"
   aggregationName Count = "COUNT"
@@ -97,11 +96,11 @@ emitOrderBy expr =
   emit "ORDER BY" <>
   emitExpr expr
 
-emitCount :: SelectAst StreamAggregation -> SqlPart
-emitCount (SelectAst _ aggExpr sFrom sWhere) =
+emitCount :: AggregationAst -> SqlPart
+emitCount (AggregationAst expr sFrom sWhere) =
   emitSelect <>
   emit " " <>
-  emitAggregation Count aggExpr <>
+  emitAggregation Count expr <>
   emit " " <>
   emitFrom sFrom <>
   emit " " <>

@@ -40,7 +40,7 @@ spec = do
 
     prop "emits binary operations correctly" $
       \(identifier :: Text) ->
-        emitExpr (BinaryOp testExpr identifier testExpr) `shouldBe` SqlPart ("?" <> identifier <> "?") [testParameter, testParameter]
+        emitExpr (BinaryOp identifier testExpr testExpr) `shouldBe` SqlPart ("?" <> identifier <> "?") [testParameter, testParameter]
 
     prop "emits function calls correctly" $
         \(identifier :: Text) ->
@@ -73,6 +73,5 @@ spec = do
 
   describe "emitLaplace" $
     it "emits SQL based on a query" $
-      emitLaplace (SelectAst Count Star "table" $ Just testExpr)
+      emitLaplace Count (AggregationAst Star "table" $ Just testExpr)
       `shouldBe` SqlPart "SELECT COUNT(*) FROM ? WHERE ?" [Parameter $ Identifier "table", testParameter]
-
