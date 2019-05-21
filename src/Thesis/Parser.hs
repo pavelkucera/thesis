@@ -15,7 +15,7 @@ import Thesis.Query.Ast
 type Parser = Parsec Void String
 
 parseQuery :: String -> Either (ParseErrorBundle String Void) Aggregation
-parseQuery s = parse query "" s
+parseQuery = parse query ""
 
 query :: Parser Aggregation
 query = between whitespace eof select
