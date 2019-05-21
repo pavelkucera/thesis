@@ -75,4 +75,3 @@ spec = do
     it "emits SQL based on a query" $
       emitLaplace Count (AggregationAst Star "table" $ Just testExpr)
       `shouldBe` SqlPart "SELECT COUNT(*) FROM ? WHERE ?" [Parameter $ Identifier "table", testParameter]
-
