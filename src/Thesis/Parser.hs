@@ -93,7 +93,7 @@ valueExpression =
   <|> column
  where
   column :: Parser Expr
-  column = Column <$> (identifier)
+  column = Column <$> identifier
 
   functionCall :: Parser Expr
   functionCall = lexeme $ do
