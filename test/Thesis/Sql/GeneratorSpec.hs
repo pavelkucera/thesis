@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Thesis.SqlGeneratorSpec (spec) where
+module Thesis.Sql.GeneratorSpec (spec) where
 
 import Data.Text (Text)
 import Database.PostgreSQL.Simple.Types (Identifier(..))
@@ -9,9 +9,9 @@ import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.QuickCheck.Instances.Text()
 
-import Thesis.Ast
-import Thesis.SqlGenerator
-import Thesis.SqlBuilder (SqlPart(..), Parameter(..))
+import Thesis.Query.Ast
+import Thesis.Sql.Generator
+import Thesis.Sql.Builder (SqlPart(..), Parameter(..))
 
 testExpr :: Expr
 testExpr = Literal (Value ("test" :: String))

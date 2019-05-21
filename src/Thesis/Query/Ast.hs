@@ -1,6 +1,6 @@
 {-# LANGUAGE GADTs #-}
 
-module Thesis.Ast where
+module Thesis.Query.Ast where
 
 import Data.Text (Text)
 import Data.Typeable (Typeable)

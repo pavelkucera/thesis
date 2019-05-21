@@ -1,6 +1,6 @@
-module Thesis.Query where
+module Thesis.Query.Query where
 
-import Thesis.Ast
+import Thesis.Query.Ast
 import Thesis.Types
 import Thesis.ValueGuard
 

@@ -6,10 +6,10 @@ import Control.Monad.IO.Class (MonadIO)
 import Database.PostgreSQL.Simple (Connection)
 import System.Random (StdGen, random)
 
-import Thesis.Ast
-import Thesis.Query
-import Thesis.SqlGenerator (emitLaplace)
-import Thesis.SqlRunner (executeSql)
+import Thesis.Query.Ast
+import Thesis.Query.Query
+import Thesis.Sql.Generator (emitLaplace)
+import Thesis.Sql.Runner (executeSql)
 import Thesis.ValueGuard
 
 -- | Runs a DatabaseQuery using the Laplace mechanism

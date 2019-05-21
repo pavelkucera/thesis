@@ -1,11 +1,11 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Thesis.SqlGenerator where
+module Thesis.Sql.Generator where
 
 import Data.Text (Text)
-import Thesis.Ast
-import Thesis.SqlBuilder
+import Thesis.Query.Ast
+import Thesis.Sql.Builder
 
 emitLaplace :: SelectAst DatabaseAggregation -> SqlPart
 emitLaplace (SelectAst agg aggExpr sFrom sWhere) =

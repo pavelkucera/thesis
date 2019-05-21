@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Thesis.QueryRunner where
+module Thesis.Query.Runner where
 
 import Control.Monad.IO.Class (MonadIO)
 import Database.PostgreSQL.Simple (Connection)
@@ -8,7 +8,7 @@ import System.Random (StdGen)
 
 import Thesis.Composition.PrivacyFilter
 import Thesis.Mechanism
-import Thesis.Query
+import Thesis.Query.Query
 
 run :: (MonadIO m, PrivacyFilter p, Mechanism a)
     => StdGen
