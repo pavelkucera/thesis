@@ -4,10 +4,10 @@
 module Thesis.ParserSpec (spec) where
 
 import Data.Scientific (Scientific)
-import Text.Megaparsec (Parsec, ParseErrorBundle, Stream, eof, runParser)
+import Text.Megaparsec (Parsec, ParseErrorBundle, Stream, eof, runParser, runParser')
 import Test.Hspec
 import Test.Hspec.QuickCheck
-import Test.Hspec.Megaparsec (shouldParse)
+import Test.Hspec.Megaparsec (initialState, shouldParse, succeedsLeaving)
 
 import Thesis.Parser
 import Thesis.Query.Ast
@@ -61,6 +61,9 @@ spec = do
 
     it "parses a nested logical expression" $
       parse expression "TRUE AND FALSE OR TRUE" `shouldParse` (BinaryOp "OR" (BinaryOp "AND" (Literal $ Value True) (Literal $ Value False)) (Literal $ Value True))
+
+    it "parses truth reserved words with priority" $
+      runParser' expression (initialState "TRUE()") `succeedsLeaving` "()"
 
   describe "query" $ do
     it "parses an example query" $

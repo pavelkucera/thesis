@@ -88,8 +88,8 @@ term =
  -- https://www.postgresql.org/docs/current/sql-expressions.html
 valueExpression :: Parser Expr
 valueExpression =
-      try functionCall
-  <|> truthValue
+      try truthValue
+  <|> try functionCall
   <|> column
  where
   column :: Parser Expr
