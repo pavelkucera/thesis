@@ -40,7 +40,7 @@ spec = do
 
     prop "emits binary operations correctly" $
       \(identifier :: Text) ->
-        emitExpr (BinaryOp identifier testExpr testExpr) `shouldBe` SqlPart ("?" <> identifier <> "?") [testParameter, testParameter]
+        emitExpr (BinaryOp identifier testExpr testExpr) `shouldBe` SqlPart ("(?)" <> identifier <> "(?)") [testParameter, testParameter]
 
     prop "emits function calls correctly" $
         \(identifier :: Text) ->
