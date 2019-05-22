@@ -6,11 +6,18 @@ import Data.Text (Text)
 import Thesis.Query.Ast
 import Thesis.Sql.Builder
 
+clip :: Expr -> Expr
+clip Star = Star
+clip Null = Null
+clip e =
+  let greatest = FunctionCall "GREATEST" [e, Literal $ Value (negate 1 :: Int)]
+  in FunctionCall "LEAST" [greatest, Literal $ Value (1 :: Int)]
+
 emitLaplace :: DatabaseAggregation -> AggregationAst -> SqlPart
 emitLaplace aggregation (AggregationAst expr sFrom sWhere) =
   emitSelect <>
   emit " " <>
-  emitAggregation aggregation expr <>
+  emitAggregation aggregation (clip expr) <>
   emit " " <>
   emitFrom sFrom <>
   emit " " <>
@@ -18,15 +25,16 @@ emitLaplace aggregation (AggregationAst expr sFrom sWhere) =
 
 emitExponential :: StreamAggregation -> AggregationAst -> SqlPart
 emitExponential _ (AggregationAst expr sFrom sWhere) =
+  let valueExpr = clip expr in
   emitSelect <>
   emit " " <>
-  emitExpr expr <>
+  emitExpr valueExpr <>
   emit " " <>
   emitFrom sFrom <>
   emit " " <>
   emitWhere sWhere <>
   emit " " <>
-  emitOrderBy expr
+  emitOrderBy valueExpr
 
 emitSelect :: SqlPart
 emitSelect = emit "SELECT"
