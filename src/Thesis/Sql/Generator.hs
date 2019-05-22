@@ -3,6 +3,7 @@
 module Thesis.Sql.Generator where
 
 import Data.Text (Text)
+import Data.List (intersperse)
 import Thesis.Query.Ast
 import Thesis.Sql.Builder
 
@@ -59,7 +60,7 @@ emitExpr (BinaryOp identifier left right) =
 emitExpr (FunctionCall identifier exprs) =
   emit identifier <>
   emit "(" <>
-  foldMap emitExpr exprs <>
+  mconcat (intersperse (emit ",") (map emitExpr exprs)) <>
   emit ")"
 emitExpr (Case branch branches elseExpr) =
   emit "CASE " <>
