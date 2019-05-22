@@ -14,7 +14,6 @@ import Thesis.Mechanism.Laplace
 import Thesis.Parser (parseQuery)
 import Thesis.Query.Ast
 import Thesis.Query.Query
-import Thesis.Types
 import Thesis.ValueGuard
 
 run :: (MonadIO m, PrivacyFilter p)
