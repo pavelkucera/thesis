@@ -4,11 +4,15 @@ module Thesis.Parser where
 
 import Data.Void (Void)
 import Data.Text (Text, pack)
+import Data.Scientific
 import Control.Monad.Combinators.Expr (Operator(..), makeExprParser)
 import Text.Megaparsec (Parsec, (<|>), between, choice, empty, eof, many, manyTill, notFollowedBy, optional, parse, sepBy, try)
 import Text.Megaparsec.Error (ParseErrorBundle)
 import Text.Megaparsec.Char (alphaNumChar, char, letterChar, space1, string')
 import qualified Text.Megaparsec.Char.Lexer as L
+import Language.Haskell.TH (Q, Exp)
+import Language.Haskell.TH.Syntax (lift, Lift)
+import Language.Haskell.TH.Quote (QuasiQuoter(..))
 
 import Thesis.Query.Ast
 
@@ -147,6 +151,9 @@ constantExpression =
   numberLiteral :: Parser Expr
   numberLiteral = Literal . Value <$> L.signed whitespace L.scientific
 
+instance Lift Scientific where
+  lift a = dataToExpQ (const Nothing) a
+
 -- | Whitespace parser
 whitespace :: Parser ()
 whitespace = L.space space1 (L.skipLineComment "#") empty
@@ -174,3 +181,18 @@ parenthesized = between (symbol "(") (symbol ")")
 -- | Parses expressions separated by commas. There may be whitespace after each comma.
 commaList :: Parser a -> Parser [a]
 commaList p = sepBy p (symbol ",")
+
+-- | QuasiQuotes
+parseQueryQQ :: String -> Q Exp
+parseQueryQQ s = case parseQuery s of
+  Left err -> fail $ show err
+  Right q -> lift q
+
+-- | QuasiQuotes
+queryQQ :: QuasiQuoter
+queryQQ = QuasiQuoter {
+  quoteExp  = parseQueryQQ,
+  quotePat  = undefined,
+  quoteType = undefined,
+  quoteDec  = undefined
+}

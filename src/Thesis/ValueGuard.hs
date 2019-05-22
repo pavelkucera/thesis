@@ -13,9 +13,15 @@ module Thesis.ValueGuard (
   zero
 ) where
 
+import Language.Haskell.TH.Syntax
+import Thesis.Types
+
 -- | Wrapper for positive values. Use 'positive' to construct a value of this type.
 newtype Positive a = Positive a
   deriving (Eq, Ord, Show)
+
+instance Lift (Positive Epsilon) where
+  lift a = dataToExpQ (const Nothing) a
 
 -- | Wrapper for non-positive values. Use 'positive' to construct a value of this type.
 newtype NonPositive a = NonPositive a
