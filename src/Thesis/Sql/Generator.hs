@@ -41,9 +41,13 @@ emitExpr (PostfixOp identifier expr) =
   emitExpr expr <>
   emit identifier
 emitExpr (BinaryOp identifier left right) =
+  emit "(" <>
   emitExpr left <>
+  emit ")" <>
   emit identifier <>
-  emitExpr right
+  emit "(" <>
+  emitExpr right <>
+  emit ")"
 emitExpr (FunctionCall identifier exprs) =
   emit identifier <>
   emit "(" <>
