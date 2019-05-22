@@ -105,7 +105,7 @@ emitFrom identifier =
 
 emitOrderBy :: Expr -> SqlPart
 emitOrderBy expr =
-  emit "ORDER BY" <>
+  emit "ORDER BY " <>
   emitExpr expr
 
 emitCount :: AggregationAst -> SqlPart
