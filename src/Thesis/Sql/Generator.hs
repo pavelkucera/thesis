@@ -3,14 +3,22 @@
 module Thesis.Sql.Generator where
 
 import Data.Text (Text)
+import Data.List (intersperse)
 import Thesis.Query.Ast
 import Thesis.Sql.Builder
+
+clip :: Expr -> Expr
+clip Star = Star
+clip Null = Null
+clip e =
+  let greatest = FunctionCall "GREATEST" [e, Literal $ Value (negate 1 :: Int)]
+  in FunctionCall "LEAST" [greatest, Literal $ Value (1 :: Int)]
 
 emitLaplace :: DatabaseAggregation -> AggregationAst -> SqlPart
 emitLaplace aggregation (AggregationAst expr sFrom sWhere) =
   emitSelect <>
   emit " " <>
-  emitAggregation aggregation expr <>
+  emitAggregation aggregation (clip expr) <>
   emit " " <>
   emitFrom sFrom <>
   emit " " <>
@@ -18,15 +26,16 @@ emitLaplace aggregation (AggregationAst expr sFrom sWhere) =
 
 emitExponential :: StreamAggregation -> AggregationAst -> SqlPart
 emitExponential _ (AggregationAst expr sFrom sWhere) =
+  let valueExpr = clip expr in
   emitSelect <>
   emit " " <>
-  emitExpr expr <>
+  emitExpr valueExpr <>
   emit " " <>
   emitFrom sFrom <>
   emit " " <>
   emitWhere sWhere <>
   emit " " <>
-  emitOrderBy expr
+  emitOrderBy valueExpr
 
 emitSelect :: SqlPart
 emitSelect = emit "SELECT"
@@ -51,7 +60,7 @@ emitExpr (BinaryOp identifier left right) =
 emitExpr (FunctionCall identifier exprs) =
   emit identifier <>
   emit "(" <>
-  foldMap emitExpr exprs <>
+  mconcat (intersperse (emit ",") (map emitExpr exprs)) <>
   emit ")"
 emitExpr (Case branch branches elseExpr) =
   emit "CASE " <>
@@ -97,7 +106,7 @@ emitFrom identifier =
 
 emitOrderBy :: Expr -> SqlPart
 emitOrderBy expr =
-  emit "ORDER BY" <>
+  emit "ORDER BY " <>
   emitExpr expr
 
 emitCount :: AggregationAst -> SqlPart
