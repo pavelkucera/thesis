@@ -44,7 +44,7 @@ runString :: (MonadIO m, PrivacyFilter p)
           -> String
           -> m (p, StdGen, Either (Either BudgetDepleted (ParseErrorBundle String Void)) Double)
 runString gen conn privacyFilter e queryString =
-  case (parseQuery queryString) of
+  case parseQuery queryString of
     Right aggregation -> do
       (newState, newGen, queryResult) <- run gen conn privacyFilter (Query e aggregation)
       case queryResult of
