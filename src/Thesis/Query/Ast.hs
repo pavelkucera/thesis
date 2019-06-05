@@ -8,6 +8,7 @@ import Database.PostgreSQL.Simple.ToField (ToField)
 
 type Identifier = Text
 
+-- | Wrapper around user-supplied parameters
 data Value where
   Value :: (Eq a, ToField a, Show a, Typeable a) => a -> Value
 
@@ -18,20 +19,24 @@ instance Eq Value where
 instance Show Value where
   show (Value x) = show x
 
+-- | Supported function calls
 data FunctionCall =
    GreatestFn Expr Expr
  | LeastFn Expr Expr
  deriving (Eq, Show)
 
+-- | Supported prefix operators
 data PrefixOp =
    NotOp
  deriving (Eq, Show)
 
+-- | Supported postfix operators
 data PostfixOp =
    IsOp (Maybe Bool)
  | IsNotOp (Maybe Bool)
  deriving (Eq, Show)
 
+-- | Supported binary operators
 data BinaryOp =
    MultiplyOp
  | DivideOp
@@ -46,6 +51,7 @@ data BinaryOp =
  | OrOp
  deriving (Eq, Show)
 
+-- | Supported expressions
 data Expr =
     Literal Value
   | Column Identifier
@@ -57,27 +63,30 @@ data Expr =
   | Star
   deriving (Eq, Show)
 
-data AggregationAst =
-  AggregationAst {
-    selectExpr :: Expr,
-    selectFrom :: Identifier,
-    selectWhere :: Maybe Expr
-  }
-  deriving (Eq, Show)
-
+-- Aggregations computed using the Laplace mechanism
 data DatabaseAggregation =
    Sum
  | Average
  | Count
  deriving (Eq, Show)
 
+-- Aggregations computed using the exponential mechanism
 data StreamAggregation =
    Median
  | Min
  | Max
  deriving (Eq, Show)
 
+-- | Type to differentiate between queries offloaded to the database and queries processed in memory
 data Aggregation =
     DatabaseAggregation DatabaseAggregation AggregationAst
   | StreamAggregation StreamAggregation AggregationAst
+  deriving (Eq, Show)
+
+data AggregationAst =
+  AggregationAst {
+    selectExpr :: Expr,
+    selectFrom :: Identifier,
+    selectWhere :: Maybe Expr
+  }
   deriving (Eq, Show)

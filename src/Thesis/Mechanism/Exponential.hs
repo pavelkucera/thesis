@@ -13,7 +13,8 @@ import Thesis.Sql.Runner
 import Thesis.Types (Epsilon)
 import Thesis.ValueGuard (Positive, value)
 
--- | Runs a query using the exponential mechanism
+-- | Runs a query using the exponential mechanism. Values are streamed into and aggregated
+-- in memory. Uses reservoir-sampling to avoid loading all values into memory at once.
 exponential :: (MonadIO m)
             => StdGen
             -> Connection
@@ -26,6 +27,7 @@ exponential gen conn e aggregation ast = do
     result <- aggregate gen conn e aggregation ast resultCount
     return (stdGen result, val result)
 
+-- Implementation of the A-Res reservoir sampling algorithm.
 aggregate :: MonadIO m
           => StdGen
           -> Connection

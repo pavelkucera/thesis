@@ -110,6 +110,7 @@ valueExpression =
     nullE = Null <$ word' "NULL"
 
 -- | Parses both regular and delimited identifiers. Consumes whitespace.
+-- https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
 identifier :: Parser Text
 identifier = pack <$> lexeme (delimitedIdentifier <|> regularIdentifier)
  where

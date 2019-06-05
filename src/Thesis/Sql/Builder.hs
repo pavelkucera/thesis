@@ -1,20 +1,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Thesis.Sql.Builder (
-  -- * Usage
-  -- $use
-
-  -- * SQL builders
-  emit,
-  emitIdentifier,
-  emitParameter,
-  toQuery,
-
-  -- * Types
-  SqlPart(..),
-  Parameter(..)
-) where
+module Thesis.Sql.Builder where
 
 import Data.Text (Text)
 import Data.Text.Encoding (encodeUtf8)
@@ -70,18 +57,3 @@ emitIdentifier i = emitParameter $ Identifier i
 -- database client.
 toQuery :: SqlPart -> (Query, [Parameter])
 toQuery (SqlPart sql ps) = (Query $ encodeUtf8 sql, ps)
-
--- $use
--- Use the 'emit', 'emitIdentifier' and 'emitParameter' functions to generate
--- escaped SQL queries. The following code
---
--- > emit "SELECT * FROM " <>
--- > emitIdentifier "table" <>
--- > emit " WHERE column = " <>
--- > emitParameter 5
--- generates SQL
---
--- > SELECT * FROM ? WHERE column = ?
---
--- where the question marks get replaced by escaped values when they the query
--- is sent to the database.
