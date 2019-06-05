@@ -76,5 +76,5 @@ spec = do
           -- Real average is 0.6
           -- With this seed the first generated number is 0.23132540861101902
           -- Transformed to laplace noise as 0.7707826838949735
-          -- Final answer must be 6.7707826838949735
+          -- Final answer must be 1.3707826838949735
           output `shouldBe` Right 1.3707826838949735
