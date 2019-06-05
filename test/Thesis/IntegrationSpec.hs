@@ -19,18 +19,19 @@ import Thesis.ValueGuard (positive, nonNegative, zero)
 seed :: Int
 seed = 1337
 
-openConnection :: IO Connection
-openConnection = do
+initState :: IO (Connection, StdGen)
+initState = do
   envHost <- lookupEnv "POSTGRES_HOST"
   let host = fromMaybe "localhost" envHost
+      gen = mkStdGen seed
+  connection <- connectPostgreSQL . pack $ "host=" ++ host ++ " dbname=postgres user=postgres password=password"
+  return (connection, gen)
 
-  connectPostgreSQL . pack $ "host=" ++ host ++ " dbname=postgres user=postgres password=password"
+destroyState :: (Connection, StdGen) -> IO ()
+destroyState = close . fst
 
-closeConnection :: Connection -> IO ()
-closeConnection = close
-
-withConnection :: (Connection -> IO ()) -> IO ()
-withConnection = bracket openConnection closeConnection
+withConnection :: ((Connection, StdGen) -> IO ()) -> IO ()
+withConnection = bracket initState destroyState
 
 spec :: Spec
 spec = do
@@ -41,10 +42,9 @@ spec = do
         privacyFilter = SimpleCompositionState budgetEpsilon zero
 
     it "counts using the Laplace mechanism" $
-      \connection ->
+      \(connection, gen) ->
         let countAst = DatabaseAggregation Count $ AggregationAst (Column "income") "households" Nothing
             countQuery = Query qEpsilon countAst
-            gen = mkStdGen seed
         in do
           (_, _, output) <- run gen connection privacyFilter countQuery
           -- Real count is 9,
@@ -54,10 +54,9 @@ spec = do
           output `shouldBe` Right 9.7707826838949735
 
     it "sums using the Laplace mechanism" $
-      \connection ->
+      \(connection, gen) ->
         let sumAst = DatabaseAggregation Sum $ AggregationAst (Column "income") "households" Nothing
             sumQuery = Query qEpsilon sumAst
-            gen = mkStdGen seed
         in do
           (_, _, output) <- run gen connection privacyFilter sumQuery
           -- Real sum is 5.4
@@ -67,10 +66,9 @@ spec = do
           output `shouldBe` Right 6.1707826838949735
 
     it "calculates averages using the Laplace mechanism" $
-      \connection ->
+      \(connection, gen) ->
         let avgAst = DatabaseAggregation Average $ AggregationAst (Column "income") "households" Nothing
             avgQuery = Query qEpsilon avgAst
-            gen = mkStdGen seed
         in do
           (_, _, output) <- run gen connection privacyFilter avgQuery
           -- Real average is 0.6
