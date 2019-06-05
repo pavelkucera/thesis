@@ -44,19 +44,42 @@ emitExpr :: Expr -> SqlPart
 emitExpr (Literal (Value v)) = emitParameter v
 emitExpr (Column identifier) = emitIdentifier identifier
 emitExpr (PrefixOp identifier expr) =
-  emit identifier <>
+  emit (opName identifier) <>
+  emit " " <>
   emitExpr expr
+ where
+  opName NotOp = "NOT"
 emitExpr (PostfixOp identifier expr) =
   emitExpr expr <>
-  emit identifier
+  emit " " <>
+  emitOp identifier
+ where
+  emitOp (IsOp value) = emit "IS " <> truthValue value
+  emitOp (IsNotOp value) = emit "IS NOT " <> truthValue value
+  truthValue Nothing = emit "NULL"
+  truthValue (Just True) = emit "TRUE"
+  truthValue (Just False) = emit "FALSE"
+
 emitExpr (BinaryOp identifier left right) =
   emit "(" <>
   emitExpr left <>
   emit ")" <>
-  emit identifier <>
+  emit (opName identifier) <>
   emit "(" <>
   emitExpr right <>
   emit ")"
+ where
+  opName MultiplyOp = "*"
+  opName DivideOp = "/"
+  opName AddOp = "+"
+  opName SubtractOp = "-"
+  opName EqualOp = "="
+  opName GreaterOp = ">"
+  opName GreaterOrEqualOp = ">="
+  opName LessOp = "<"
+  opName LessOrEqualOp = "*"
+  opName AndOp = "AND"
+  opName OrOp = "OR"
 emitExpr (FunctionCall fn) =
   case fn of
     GreatestFn e1 e2 -> emitFunction "GREATEST" [e1, e2]

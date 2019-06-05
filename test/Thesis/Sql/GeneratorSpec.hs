@@ -30,18 +30,6 @@ spec = do
       \(identifier :: Text) ->
         emitExpr (Column identifier) `shouldBe` SqlPart "?" [Parameter $ Identifier identifier]
 
-    prop "emits prefix operations correctly" $
-      \(identifier :: Text) ->
-        emitExpr (PrefixOp identifier testExpr) `shouldBe` SqlPart (identifier <> "?") [Parameter ("test" :: String)]
-
-    prop "emits postfix operations correctly" $
-      \(identifier :: Text) ->
-        emitExpr (PostfixOp identifier testExpr) `shouldBe` SqlPart ("?" <> identifier) [Parameter ("test" :: String)]
-
-    prop "emits binary operations correctly" $
-      \(identifier :: Text) ->
-        emitExpr (BinaryOp identifier testExpr testExpr) `shouldBe` SqlPart ("(?)" <> identifier <> "(?)") [testParameter, testParameter]
-
   describe "emitAggregation" $ do
     it "emits average correctly" $
       emitAggregation Average testExpr `shouldBe` SqlPart "AVG(?)" [testParameter]
