@@ -68,19 +68,19 @@ expression = makeExprParser term [
     Postfix (PostfixOp (IsOp $ Just False) <$ word' "IS FALSE")
   ],
   [
-    InfixL (BinaryOp MultiplyOp <$ symbol' "*"),
-    InfixL (BinaryOp DivideOp <$ symbol' "/")
+    InfixL (BinaryOp MultiplyOp <$ symbol "*"),
+    InfixL (BinaryOp DivideOp <$ symbol "/")
   ],
   [
-    InfixL (BinaryOp AddOp <$ symbol' "+"),
-    InfixL (BinaryOp SubtractOp <$ symbol' "-")
+    InfixL (BinaryOp AddOp <$ symbol "+"),
+    InfixL (BinaryOp SubtractOp <$ symbol "-")
   ],
   [
-    InfixN (BinaryOp EqualOp <$ symbol' "="),
-    InfixN (BinaryOp GreaterOrEqualOp <$ symbol' ">="),
-    InfixN (BinaryOp GreaterOp <$ symbol' ">"),
-    InfixN (BinaryOp LessOp <$ symbol' "<="),
-    InfixN (BinaryOp LessOrEqualOp <$ symbol' "<")
+    InfixN (BinaryOp EqualOp <$ symbol "="),
+    InfixN (BinaryOp GreaterOrEqualOp <$ symbol ">="),
+    InfixN (BinaryOp GreaterOp <$ symbol ">"),
+    InfixN (BinaryOp LessOp <$ symbol "<="),
+    InfixN (BinaryOp LessOrEqualOp <$ symbol "<")
   ],
   [InfixL (BinaryOp AndOp <$ word' "AND")],
   [InfixL (BinaryOp OrOp <$ word' "OR")]
