@@ -22,12 +22,12 @@ run :: (MonadIO m, PrivacyFilter p)
     -> p
     -> Query
     -> m (p, StdGen, Either BudgetDepleted Double)
-run gen conn privacyFilter query@(Query e aggregation) =
+run gen conn privacyFilter (Query e aggregation) =
   let (mechanism, delta) =
         case aggregation of
           DatabaseAggregation agg ast -> (laplace gen conn e agg ast, zero)
           StreamAggregation agg ast -> (exponential gen conn e agg ast, zero)
-  in case subtractBudget privacyFilter (queryEpsilon query, delta) of
+  in case subtractBudget privacyFilter (e, delta) of
     Left err -> return (privacyFilter, gen, Left err)
     Right newState -> do
       (newGen, res) <- mechanism
