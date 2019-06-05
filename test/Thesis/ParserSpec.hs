@@ -49,9 +49,6 @@ spec = do
     it "parses null" $
       parse valueExpression "null" `shouldParse` Null
 
-    it "parses a function call" $
-      parse valueExpression "sqrt(2)" `shouldParse` (FunctionCall "sqrt" [Literal $ Value (2 :: Scientific)])
-
   describe "expression" $ do
     it "parses an AND expresion" $
       parse expression "TRUE AND FALSE" `shouldParse` (BinaryOp "AND" (Literal $ Value True) (Literal $ Value False))

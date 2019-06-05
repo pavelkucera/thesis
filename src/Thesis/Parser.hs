@@ -89,17 +89,10 @@ term =
 valueExpression :: Parser Expr
 valueExpression =
       try truthValue
-  <|> try functionCall
   <|> column
  where
   column :: Parser Expr
   column = Column <$> identifier
-
-  functionCall :: Parser Expr
-  functionCall = lexeme $ do
-    name <- identifier
-    args <- parenthesized (commaList expression)
-    return $ FunctionCall name args
 
   truthValue :: Parser Expr
   truthValue = lexeme $ true <|> false <|> nullE
