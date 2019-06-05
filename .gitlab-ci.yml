@@ -6,6 +6,16 @@ cache:
   paths:
     - .stack-work
 
+services:
+  - name: pavelkucera/thesis-postgres:11.2-alpine
+    alias: postgres
+
+variables:
+  POSTGRES_HOST: postgres
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: password
+
 test:
   stage: test
   image: pavelkucera/thesis:lts-13.17
