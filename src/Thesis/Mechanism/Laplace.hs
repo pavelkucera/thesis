@@ -28,7 +28,7 @@ laplace gen connection e aggregation ast  =
     trueAnswer <- executeSql connection sql
     return (newGen, trueAnswer + noise)
 
--- | Sensitivy for all statistics is 1 as processed values are always clipped to the [-1, 1] range.
+-- | Sensitivity for all statistics is 1 as processed values are always clipped to the [-1, 1] range.
 sensitivity :: DatabaseAggregation -> Double
 sensitivity Average = 1
 sensitivity Sum = 1
