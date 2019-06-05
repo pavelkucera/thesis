@@ -42,14 +42,6 @@ spec = do
       \(identifier :: Text) ->
         emitExpr (BinaryOp identifier testExpr testExpr) `shouldBe` SqlPart ("(?)" <> identifier <> "(?)") [testParameter, testParameter]
 
-    prop "emits function call with one argument correctly" $
-        \(identifier :: Text) ->
-          emitExpr (FunctionCall identifier [testExpr]) `shouldBe` SqlPart (identifier <> "(?)") [testParameter]
-
-    prop "emits function call with multiple arguments correctly" $
-        \(identifier :: Text) ->
-          emitExpr (FunctionCall identifier [testExpr, testExpr]) `shouldBe` SqlPart (identifier <> "(?,?)") [testParameter, testParameter]
-
   describe "emitAggregation" $ do
     it "emits average correctly" $
       emitAggregation Average testExpr `shouldBe` SqlPart "AVG(?)" [testParameter]

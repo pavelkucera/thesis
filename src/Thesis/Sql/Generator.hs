@@ -11,8 +11,8 @@ clip :: Expr -> Expr
 clip Star = Star
 clip Null = Null
 clip e =
-  let greatest = FunctionCall "GREATEST" [e, Literal $ Value (negate 1 :: Int)]
-  in FunctionCall "LEAST" [greatest, Literal $ Value (1 :: Int)]
+  let greatest = FunctionCall $ GreatestFn e  (Literal $ Value (negate 1 :: Int))
+  in FunctionCall $ LeastFn greatest (Literal $ Value (1 :: Int))
 
 emitLaplace :: DatabaseAggregation -> AggregationAst -> SqlPart
 emitLaplace aggregation (AggregationAst expr sFrom sWhere) =
@@ -57,27 +57,17 @@ emitExpr (BinaryOp identifier left right) =
   emit "(" <>
   emitExpr right <>
   emit ")"
-emitExpr (FunctionCall identifier exprs) =
-  emit identifier <>
-  emit "(" <>
-  mconcat (intersperse (emit ",") (map emitExpr exprs)) <>
-  emit ")"
-emitExpr (Case branch branches elseExpr) =
-  emit "CASE " <>
-  emitBranch branch <>
-  emitBranches branches <>
-  emitElse <>
-  emit "END"
+emitExpr (FunctionCall fn) =
+  case fn of
+    GreatestFn e1 e2 -> emitFunction "GREATEST" [e1, e2]
+    LeastFn e1 e2 -> emitFunction "LEAST" [e1, e2]
  where
-  emitBranches = foldMap emitBranch
-  emitBranch (cond, expr) =
-    emit "WHEN " <>
-    emitExpr cond <>
-    emit " THEN " <>
-    emitExpr expr <>
-    emit " "
-  emitElse =
-    maybe mempty (\e -> emit "ELSE " <> emitExpr e <> emit " ") elseExpr
+  emitFunction :: Text -> [Expr] -> SqlPart
+  emitFunction identifier exprs =
+    emit identifier <>
+    emit "(" <>
+    mconcat (intersperse (emit ",") (map emitExpr exprs)) <>
+    emit ")"
 emitExpr Null = emit "NULL"
 emitExpr Star = emit "*"
 
