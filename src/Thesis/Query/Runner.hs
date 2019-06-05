@@ -17,8 +17,6 @@ import Thesis.Query.Query
 import Thesis.Types
 import Thesis.ValueGuard
 
-type Mechanism m agg = StdGen -> Connection -> Positive Epsilon -> agg -> AggregationAst -> m (StdGen, Double)
-
 run :: (MonadIO m, PrivacyFilter p)
     => StdGen
     -> Connection
