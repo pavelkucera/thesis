@@ -109,7 +109,7 @@ valueExpression =
     false = Literal (Value False) <$ word' "FALSE"
     nullE = Null <$ word' "NULL"
 
--- | Parsers both regular and delimited identifiers. Consumes whitespace.
+-- | Parses both regular and delimited identifiers. Consumes whitespace.
 identifier :: Parser Text
 identifier = pack <$> lexeme (delimitedIdentifier <|> regularIdentifier)
  where
