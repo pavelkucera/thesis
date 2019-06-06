@@ -11,8 +11,8 @@ clip :: Expr -> Expr
 clip Star = Star
 clip Null = Null
 clip e =
-  let greatest = FunctionCall "GREATEST" [e, Literal $ Value (negate 1 :: Int)]
-  in FunctionCall "LEAST" [greatest, Literal $ Value (1 :: Int)]
+  let greatest = FunctionCall $ GreatestFn e  (Literal $ Value (negate 1 :: Int))
+  in FunctionCall $ LeastFn greatest (Literal $ Value (1 :: Int))
 
 emitLaplace :: DatabaseAggregation -> AggregationAst -> SqlPart
 emitLaplace aggregation (AggregationAst expr sFrom sWhere) =
@@ -44,40 +44,53 @@ emitExpr :: Expr -> SqlPart
 emitExpr (Literal (Value v)) = emitParameter v
 emitExpr (Column identifier) = emitIdentifier identifier
 emitExpr (PrefixOp identifier expr) =
-  emit identifier <>
+  emit (opName identifier) <>
+  emit " " <>
   emitExpr expr
+ where
+  opName NotOp = "NOT"
 emitExpr (PostfixOp identifier expr) =
   emitExpr expr <>
-  emit identifier
+  emit " " <>
+  emitOp identifier
+ where
+  emitOp (IsOp value) = emit "IS " <> truthValue value
+  emitOp (IsNotOp value) = emit "IS NOT " <> truthValue value
+  truthValue Nothing = emit "NULL"
+  truthValue (Just True) = emit "TRUE"
+  truthValue (Just False) = emit "FALSE"
+
 emitExpr (BinaryOp identifier left right) =
   emit "(" <>
   emitExpr left <>
   emit ")" <>
-  emit identifier <>
+  emit (opName identifier) <>
   emit "(" <>
   emitExpr right <>
   emit ")"
-emitExpr (FunctionCall identifier exprs) =
-  emit identifier <>
-  emit "(" <>
-  mconcat (intersperse (emit ",") (map emitExpr exprs)) <>
-  emit ")"
-emitExpr (Case branch branches elseExpr) =
-  emit "CASE " <>
-  emitBranch branch <>
-  emitBranches branches <>
-  emitElse <>
-  emit "END"
  where
-  emitBranches = foldMap emitBranch
-  emitBranch (cond, expr) =
-    emit "WHEN " <>
-    emitExpr cond <>
-    emit " THEN " <>
-    emitExpr expr <>
-    emit " "
-  emitElse =
-    maybe mempty (\e -> emit "ELSE " <> emitExpr e <> emit " ") elseExpr
+  opName MultiplyOp = "*"
+  opName DivideOp = "/"
+  opName AddOp = "+"
+  opName SubtractOp = "-"
+  opName EqualOp = "="
+  opName GreaterOp = ">"
+  opName GreaterOrEqualOp = ">="
+  opName LessOp = "<"
+  opName LessOrEqualOp = "*"
+  opName AndOp = "AND"
+  opName OrOp = "OR"
+emitExpr (FunctionCall fn) =
+  case fn of
+    GreatestFn e1 e2 -> emitFunction "GREATEST" [e1, e2]
+    LeastFn e1 e2 -> emitFunction "LEAST" [e1, e2]
+ where
+  emitFunction :: Text -> [Expr] -> SqlPart
+  emitFunction identifier exprs =
+    emit identifier <>
+    emit "(" <>
+    mconcat (intersperse (emit ",") (map emitExpr exprs)) <>
+    emit ")"
 emitExpr Null = emit "NULL"
 emitExpr Star = emit "*"
 

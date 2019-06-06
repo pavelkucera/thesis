@@ -18,14 +18,41 @@ instance Eq Value where
 instance Show Value where
   show (Value x) = show x
 
+data FunctionCall =
+   GreatestFn Expr Expr
+ | LeastFn Expr Expr
+ deriving (Eq, Show)
+
+data PrefixOp =
+   NotOp
+ deriving (Eq, Show)
+
+data PostfixOp =
+   IsOp (Maybe Bool)
+ | IsNotOp (Maybe Bool)
+ deriving (Eq, Show)
+
+data BinaryOp =
+   MultiplyOp
+ | DivideOp
+ | AddOp
+ | SubtractOp
+ | EqualOp
+ | LessOp
+ | LessOrEqualOp
+ | GreaterOp
+ | GreaterOrEqualOp
+ | AndOp
+ | OrOp
+ deriving (Eq, Show)
+
 data Expr =
     Literal Value
   | Column Identifier
-  | PrefixOp Identifier Expr
-  | PostfixOp Identifier Expr
-  | BinaryOp Identifier Expr Expr
-  | FunctionCall Identifier [Expr]
-  | Case (Expr, Expr) [(Expr, Expr)] (Maybe Expr)
+  | PrefixOp PrefixOp Expr
+  | PostfixOp PostfixOp Expr
+  | BinaryOp BinaryOp Expr Expr
+  | FunctionCall FunctionCall
   | Null
   | Star
   deriving (Eq, Show)

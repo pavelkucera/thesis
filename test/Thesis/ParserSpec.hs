@@ -49,25 +49,22 @@ spec = do
     it "parses null" $
       parse valueExpression "null" `shouldParse` Null
 
-    it "parses a function call" $
-      parse valueExpression "sqrt(2)" `shouldParse` (FunctionCall "sqrt" [Literal $ Value (2 :: Scientific)])
-
   describe "expression" $ do
     it "parses an AND expresion" $
-      parse expression "TRUE AND FALSE" `shouldParse` (BinaryOp "AND" (Literal $ Value True) (Literal $ Value False))
+      parse expression "TRUE AND FALSE" `shouldParse` (BinaryOp AndOp (Literal $ Value True) (Literal $ Value False))
 
     it "parses an OR expresion" $
-      parse expression "TRUE OR FALSE" `shouldParse` (BinaryOp "OR" (Literal $ Value True) (Literal $ Value False))
+      parse expression "TRUE OR FALSE" `shouldParse` (BinaryOp OrOp (Literal $ Value True) (Literal $ Value False))
 
     it "parses a nested logical expression" $
-      parse expression "TRUE AND FALSE OR TRUE" `shouldParse` (BinaryOp "OR" (BinaryOp "AND" (Literal $ Value True) (Literal $ Value False)) (Literal $ Value True))
+      parse expression "TRUE AND FALSE OR TRUE" `shouldParse` (BinaryOp OrOp (BinaryOp AndOp (Literal $ Value True) (Literal $ Value False)) (Literal $ Value True))
 
     it "parses truth reserved words with priority" $
       runParser' expression (initialState "TRUE()") `succeedsLeaving` "()"
 
   describe "query" $ do
     it "parses an example query" $
-      let expected = StreamAggregation Median (AggregationAst (Column "col") "people" (Just $ BinaryOp ">" (Column "age") (Literal $ Value (20 :: Scientific))))
+      let expected = StreamAggregation Median (AggregationAst (Column "col") "people" (Just $ BinaryOp GreaterOp (Column "age") (Literal $ Value (20 :: Scientific))))
       in parse query "SELECT MEDIAN(col) FROM people WHERE age > 20" `shouldParse` expected
 
 -- ^ Run a single parser and ensure that it consumes the whole string

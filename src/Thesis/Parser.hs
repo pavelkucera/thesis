@@ -59,23 +59,31 @@ selectExpression =
 expression :: Parser Expr
 expression = makeExprParser term [
   [
-    Prefix (PrefixOp "NOT" <$ word' "NOT"),
-    Postfix (PostfixOp "IS NOT NULL" <$ word' "IS NOT NULL"),
-    Postfix (PostfixOp "IS NULL" <$ word' "IS NULL"),
-    Postfix (PostfixOp "IS NOT TRUE" <$ word' "IS NOT TRUE"),
-    Postfix (PostfixOp "IS TRUE" <$ word' "IS TRUE"),
-    Postfix (PostfixOp "IS NOT FALSE" <$ word' "IS NOT FALSE"),
-    Postfix (PostfixOp "IS FALSE" <$ word' "IS FALSE")
-   ],
-  [InfixL (BinaryOp "*" <$ symbol' "*"), InfixL (BinaryOp "/" <$ symbol' "/")],
-  [InfixL (BinaryOp "+" <$ symbol' "+"), InfixL (BinaryOp "-" <$ symbol' "-")],
-  [
-    InfixN (BinaryOp "=" <$ symbol' "="), InfixN (BinaryOp ">=" <$ symbol' ">="),
-    InfixN (BinaryOp ">" <$ symbol' ">"), InfixN (BinaryOp "<=" <$ symbol' "<="),
-    InfixN (BinaryOp "<" <$ symbol' "<")
+    Prefix (PrefixOp NotOp <$ word' "NOT"),
+    Postfix (PostfixOp (IsNotOp Nothing) <$ word' "IS NOT NULL"),
+    Postfix (PostfixOp (IsOp Nothing) <$ word' "IS NULL"),
+    Postfix (PostfixOp (IsNotOp $ Just True) <$ word' "IS NOT TRUE"),
+    Postfix (PostfixOp (IsOp $ Just True) <$ word' "IS TRUE"),
+    Postfix (PostfixOp (IsNotOp $ Just False) <$ word' "IS NOT FALSE"),
+    Postfix (PostfixOp (IsOp $ Just False) <$ word' "IS FALSE")
   ],
-  [InfixL (BinaryOp "AND" <$ word' "AND")],
-  [InfixL (BinaryOp "OR" <$ word' "OR")]
+  [
+    InfixL (BinaryOp MultiplyOp <$ symbol "*"),
+    InfixL (BinaryOp DivideOp <$ symbol "/")
+  ],
+  [
+    InfixL (BinaryOp AddOp <$ symbol "+"),
+    InfixL (BinaryOp SubtractOp <$ symbol "-")
+  ],
+  [
+    InfixN (BinaryOp EqualOp <$ symbol "="),
+    InfixN (BinaryOp GreaterOrEqualOp <$ symbol ">="),
+    InfixN (BinaryOp GreaterOp <$ symbol ">"),
+    InfixN (BinaryOp LessOp <$ symbol "<="),
+    InfixN (BinaryOp LessOrEqualOp <$ symbol "<")
+  ],
+  [InfixL (BinaryOp AndOp <$ word' "AND")],
+  [InfixL (BinaryOp OrOp <$ word' "OR")]
  ]
 
 term :: Parser Expr
@@ -89,17 +97,10 @@ term =
 valueExpression :: Parser Expr
 valueExpression =
       try truthValue
-  <|> try functionCall
   <|> column
  where
   column :: Parser Expr
   column = Column <$> identifier
-
-  functionCall :: Parser Expr
-  functionCall = lexeme $ do
-    name <- identifier
-    args <- parenthesized (commaList expression)
-    return $ FunctionCall name args
 
   truthValue :: Parser Expr
   truthValue = lexeme $ true <|> false <|> nullE
