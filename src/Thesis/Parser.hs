@@ -92,8 +92,8 @@ term =
   <|> valueExpression
   <|> constantExpression
 
- -- | Supported value expression parser. Consumes whitespace.
- -- https://www.postgresql.org/docs/current/sql-expressions.html
+-- | Supported value expression parser. Consumes whitespace.
+-- https://www.postgresql.org/docs/current/sql-expressions.html
 valueExpression :: Parser Expr
 valueExpression =
       try truthValue
