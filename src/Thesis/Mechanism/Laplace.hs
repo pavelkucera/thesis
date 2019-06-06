@@ -12,7 +12,7 @@ import Thesis.Sql.Runner (executeSql)
 import Thesis.Types
 import Thesis.ValueGuard
 
--- | Runs a DatabaseQuery using the Laplace mechanism
+-- | Runs a DatabaseQuery using the Laplace mechanism.
 laplace :: (MonadIO m)
         => StdGen
         -> Connection
@@ -28,6 +28,7 @@ laplace gen connection e aggregation ast  =
     trueAnswer <- executeSql connection sql
     return (newGen, trueAnswer + noise)
 
+-- | Sensitivity for all statistics is 1 as processed values are always clipped to the [-1, 1] range.
 sensitivity :: DatabaseAggregation -> Double
 sensitivity Average = 1
 sensitivity Sum = 1

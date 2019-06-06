@@ -109,7 +109,8 @@ valueExpression =
     false = Literal (Value False) <$ word' "FALSE"
     nullE = Null <$ word' "NULL"
 
--- | Parsers both regular and delimited identifiers. Consumes whitespace.
+-- | Parses both regular and delimited identifiers. Consumes whitespace.
+-- https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
 identifier :: Parser Text
 identifier = pack <$> lexeme (delimitedIdentifier <|> regularIdentifier)
  where

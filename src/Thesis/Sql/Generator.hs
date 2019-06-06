@@ -7,6 +7,8 @@ import Data.List (intersperse)
 import Thesis.Query.Ast
 import Thesis.Sql.Builder
 
+-- | Clips expression E into range [-1, 1] by using LEAST(GREATEST(E, -1), 1).
+-- Necessary to limit function sensitivity.
 clip :: Expr -> Expr
 clip Star = Star
 clip Null = Null
@@ -14,6 +16,8 @@ clip e =
   let greatest = FunctionCall $ GreatestFn e  (Literal $ Value (negate 1 :: Int))
   in FunctionCall $ LeastFn greatest (Literal $ Value (1 :: Int))
 
+-- | High-level function to emit a query fetching a value for the Laplace mechanism.
+-- Offloads computation to the database.
 emitLaplace :: DatabaseAggregation -> AggregationAst -> SqlPart
 emitLaplace aggregation (AggregationAst expr sFrom sWhere) =
   emitSelect <>
@@ -24,6 +28,8 @@ emitLaplace aggregation (AggregationAst expr sFrom sWhere) =
   emit " " <>
   emitWhere sWhere
 
+-- | High-level function to emit a query fetching values for the exponential mechanism.
+-- Results have to be aggregated in-memory.
 emitExponential :: StreamAggregation -> AggregationAst -> SqlPart
 emitExponential _ (AggregationAst expr sFrom sWhere) =
   let valueExpr = clip expr in

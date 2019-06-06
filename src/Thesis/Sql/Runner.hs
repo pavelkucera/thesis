@@ -6,6 +6,7 @@ import Database.PostgreSQL.Simple (Connection, query, fold, Only(..), FromRow)
 
 import Thesis.Sql.Builder
 
+-- | Helper to execute a numeric query. Turns NULL values into 0.
 executeSql :: (MonadIO m) => Connection -> SqlPart -> m Double
 executeSql conn sqlPart = do
   let (sqlQuery, sqlParameters) = toQuery sqlPart
@@ -14,6 +15,7 @@ executeSql conn sqlPart = do
     [Only (Just v)] -> toRealFloat v
     _ -> 0
 
+-- | Helper to fold over a stream of values.
 foldSql :: (MonadIO m, FromRow row)
         => Connection
         -> a
@@ -24,6 +26,7 @@ foldSql conn emptyState reducer sqlPart =
   let (sql, params) = toQuery sqlPart
   in liftIO $ fold conn sql params emptyState reducer
 
+-- | Processes numeric results. Turns NULL values into 0.
 extractValue :: Only (Maybe Scientific) -> Double
 extractValue (Only (Just v)) = toRealFloat v
 extractValue _ = 0
