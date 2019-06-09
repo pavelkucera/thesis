@@ -79,7 +79,7 @@ data AggregationState = AggregationState {
 emptyState :: StdGen -> AggregationState
 emptyState gen = AggregationState {
   index = 0,
-  val = 0,
+  val = -1,
   count = 0,
   stdGen = gen
 }
