@@ -16,7 +16,7 @@ import Thesis.Composition.Simple as X (SimpleCompositionState(..))
 import Thesis.Query.Query
 import Thesis.Query.Runner
 import Thesis.Types as X (Epsilon, Delta)
-import Thesis.ValueGuard as X (Positive, NonNegative, positive, nonNegative, zero)
+import Thesis.ValueGuard as X (Positive, NonNegative, positive, nonNegative, value, zero)
 
 runString :: (MonadIO m, PrivacyFilter p)
           => StdGen
