@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Epsalon.Internal.IntegrationSpec (spec) where
+module Epsalon.IntegrationSpec (spec) where
 
 import Control.Exception (bracket)
 import Data.ByteString.Char8 (pack)
