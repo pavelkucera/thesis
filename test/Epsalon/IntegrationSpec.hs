@@ -34,48 +34,58 @@ withConnection = bracket initState destroyState
 
 spec :: Spec
 spec = do
-  around withConnection $
+  around withConnection $ do
+    describe "executeQuery" $ do
+      it "counts" $
+        \(connection, gen, qEpsilon, privacyFilter) -> do
+          let query = Query qEpsilon $ DatabaseAggregation Count $ AggregationAst (Column "income") "households" Nothing
+          (_, _, output) <- executeQuery gen connection privacyFilter query
+          -- Real count is 9,
+          -- With this seed the first generated number is 0.23132540861101902
+          -- Transformed to laplace noise as 0.7707826838949735
+          -- Final answer must be 9.7707826838949735
+          output `shouldBe` Right 9.7707826838949735
+
+      it "sums" $
+        \(connection, gen, qEpsilon, privacyFilter) -> do
+          let query = Query qEpsilon $ DatabaseAggregation Sum $ AggregationAst (Column "income") "households" Nothing
+          (_, _, output) <- executeQuery gen connection privacyFilter query
+          -- Real sum is 5.4
+          -- With this seed the first generated number is 0.23132540861101902
+          -- Transformed to laplace noise as 0.7707826838949735
+          -- Final answer must be 6.1707826838949735
+          output `shouldBe` Right 6.1707826838949735
+
+      it "calculates average" $
+        \(connection, gen, qEpsilon, privacyFilter) -> do
+          let query = Query qEpsilon $ DatabaseAggregation Average $ AggregationAst (Column "income") "households" Nothing
+          (_, _, output) <- executeQuery gen connection privacyFilter query
+          -- Real average is 0.6
+          -- With this seed the first generated number is 0.23132540861101902
+          -- Transformed to laplace noise as 0.7707826838949735
+          -- Final answer must be 1.3707826838949735
+          output `shouldBe` Right 1.3707826838949735
+
+      it "gives median" $
+        \(connection, gen, qEpsilon, privacyFilter) -> do
+          let query = Query qEpsilon $ StreamAggregation Median $ AggregationAst (Column "household_head_age") "households" Nothing
+          (_, _, output) <- executeQuery gen connection privacyFilter query
+          output `shouldSatisfy` isRight
+
+      it "gives min" $
+        \(connection, gen, qEpsilon, privacyFilter) -> do
+          let query = Query qEpsilon $ StreamAggregation Min $ AggregationAst (Column "household_head_age") "households" Nothing
+          (_, _, output) <- executeQuery gen connection privacyFilter query
+          output `shouldSatisfy` isRight
+
+      it "gives max" $
+        \(connection, gen, qEpsilon, privacyFilter) -> do
+          let query = Query qEpsilon $ StreamAggregation Max $ AggregationAst (Column "household_head_age") "households" Nothing
+          (_, _, output) <- executeQuery gen connection privacyFilter query
+          output `shouldSatisfy` isRight
+
     describe "runString" $ do
-      describe "Laplace" $ do
-        it "counts" $
-          \(connection, gen, qEpsilon, privacyFilter) -> do
-            (_, _, output) <- runString gen connection privacyFilter qEpsilon "SELECT COUNT(income) FROM households"
-            -- Real count is 9,
-            -- With this seed the first generated number is 0.23132540861101902
-            -- Transformed to laplace noise as 0.7707826838949735
-            -- Final answer must be 9.7707826838949735
-            output `shouldBe` Right 9.7707826838949735
-
-        it "sums" $
-          \(connection, gen, qEpsilon, privacyFilter) -> do
-            (_, _, output) <- runString gen connection privacyFilter qEpsilon "SELECT SUM(income) FROM households"
-            -- Real sum is 5.4
-            -- With this seed the first generated number is 0.23132540861101902
-            -- Transformed to laplace noise as 0.7707826838949735
-            -- Final answer must be 6.1707826838949735
-            output `shouldBe` Right 6.1707826838949735
-
-        it "calculates average" $
-          \(connection, gen, qEpsilon, privacyFilter) -> do
-            (_, _, output) <- runString gen connection privacyFilter qEpsilon "SELECT AVG(income) FROM households"
-            -- Real average is 0.6
-            -- With this seed the first generated number is 0.23132540861101902
-            -- Transformed to laplace noise as 0.7707826838949735
-            -- Final answer must be 1.3707826838949735
-            output `shouldBe` Right 1.3707826838949735
-
-      describe "exponential" $ do
-        it "gives median" $
-          \(connection, gen, qEpsilon, privacyFilter) -> do
-            (_, _, output) <- runString gen connection privacyFilter qEpsilon "SELECT MEDIAN(household_head_age) FROM households"
-            output `shouldSatisfy` isRight
-
-        it "gives min" $
-          \(connection, gen, qEpsilon, privacyFilter) -> do
-            (_, _, output) <- runString gen connection privacyFilter qEpsilon "SELECT MIN(household_head_age) FROM households"
-            output `shouldSatisfy` isRight
-
-        it "gives max" $
-          \(connection, gen, qEpsilon, privacyFilter) -> do
-            (_, _, output) <- runString gen connection privacyFilter qEpsilon "SELECT MAX(household_head_age) FROM households"
-            output `shouldSatisfy` isRight
+      it "allows to run queries" $
+        \(connection, gen, qEpsilon, privacyFilter) -> do
+          (_, _, output) <- runString gen connection privacyFilter qEpsilon "SELECT COUNT(income) FROM households"
+          output `shouldSatisfy` isRight

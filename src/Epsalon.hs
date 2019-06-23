@@ -25,12 +25,12 @@ executeQuery :: (MonadIO m, PrivacyFilter p)
              -> Connection
              -> p
              -> Query
-             -> m (p, StdGen, Either (Either BudgetDepleted (ParseErrorBundle String Void)) Double)
+             -> m (p, StdGen, Either BudgetDepleted Double)
 executeQuery gen conn privacyFilter query = do
   (newState, newGen, queryResult) <- run gen conn privacyFilter query
   return $ case queryResult of
     Right res -> (newState, newGen, Right res)
-    Left err -> (newState, newGen, Left (Left err))
+    Left err -> (newState, newGen, Left err)
 
 runString :: (MonadIO m, PrivacyFilter p)
           => StdGen
@@ -41,5 +41,9 @@ runString :: (MonadIO m, PrivacyFilter p)
           -> m (p, StdGen, Either (Either BudgetDepleted (ParseErrorBundle String Void)) Double)
 runString gen conn privacyFilter e queryString =
   case parseQuery queryString of
-    Right aggregation -> executeQuery gen conn privacyFilter (Query e aggregation)
+    Right aggregation -> do
+      (newState, newGen, result) <- executeQuery gen conn privacyFilter (Query e aggregation)
+      case result of
+        Right result' -> return (newState, newGen, Right result')
+        Left err -> return (newState, newGen, Left (Left err))
     Left err -> return (privacyFilter, gen, Left (Right err))
