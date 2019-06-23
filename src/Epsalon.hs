@@ -1,6 +1,6 @@
 module Epsalon (
   executeQuery,
-  runString,
+  executeStringQuery,
   module X
 ) where
 
@@ -32,14 +32,14 @@ executeQuery gen conn privacyFilter query = do
     Right res -> (newState, newGen, Right res)
     Left err -> (newState, newGen, Left err)
 
-runString :: (MonadIO m, PrivacyFilter p)
-          => StdGen
-          -> Connection
-          -> p
-          -> Positive Epsilon
-          -> String
-          -> m (p, StdGen, Either (Either BudgetDepleted (ParseErrorBundle String Void)) Double)
-runString gen conn privacyFilter e queryString =
+executeStringQuery :: (MonadIO m, PrivacyFilter p)
+                   => StdGen
+                   -> Connection
+                   -> p
+                   -> Positive Epsilon
+                   -> String
+                   -> m (p, StdGen, Either (Either BudgetDepleted (ParseErrorBundle String Void)) Double)
+executeStringQuery gen conn privacyFilter e queryString =
   case parseQuery queryString of
     Right aggregation -> do
       (newState, newGen, result) <- executeQuery gen conn privacyFilter (Query e aggregation)

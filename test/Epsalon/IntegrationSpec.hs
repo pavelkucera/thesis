@@ -84,8 +84,8 @@ spec = do
           (_, _, output) <- executeQuery gen connection privacyFilter query
           output `shouldSatisfy` isRight
 
-    describe "runString" $ do
+    describe "executeStringQuery" $ do
       it "allows to run queries" $
         \(connection, gen, qEpsilon, privacyFilter) -> do
-          (_, _, output) <- runString gen connection privacyFilter qEpsilon "SELECT COUNT(income) FROM households"
+          (_, _, output) <- executeStringQuery gen connection privacyFilter qEpsilon "SELECT COUNT(income) FROM households"
           output `shouldSatisfy` isRight
