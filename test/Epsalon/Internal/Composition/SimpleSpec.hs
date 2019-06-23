@@ -14,32 +14,33 @@ import Epsalon.Internal.Composition.Helpers
 spec :: Spec
 spec = do
   it "returns an error when epsilon exceeds the budget" $
-    let state = emptyState (mkBudget 1 2) :: SimpleCompositionState
-        price = mkPrice 2 1
+    let budget = (NonNegative 1, NonNegative 2)
+        price = (Positive 2, NonNegative 1)
+        state = emptyState budget :: SimpleCompositionState
     in subtractBudget state price `shouldBe` Left BudgetDepleted
 
   it "returns an error when delta exceeds the budget" $
-    let state = emptyState (mkBudget 2 1) :: SimpleCompositionState
-        price = mkPrice 1 2
+    let budget = (NonNegative 2, NonNegative 1)
+        price = (Positive 1, NonNegative 2)
+        state = emptyState budget :: SimpleCompositionState
     in subtractBudget state price `shouldBe` Left BudgetDepleted
 
   it "returns updated budget" $
-    let state = emptyState (mkBudget 2 2)
-        price = mkPrice 1 1
-        (epsilon, delta) = mkBudget 1 1
-    in subtractBudget state price `shouldBe` Right (SimpleCompositionState epsilon delta)
+    let state = emptyState (NonNegative 2, NonNegative 2)
+        price = (Positive 1, NonNegative 1)
+    in subtractBudget state price `shouldBe` Right (SimpleCompositionState (NonNegative 1) (NonNegative 1))
 
   it "allows for a series of queries" $
-    let state = emptyState (mkBudget 0.5 (2**(-30))) :: SimpleCompositionState
-        price = mkPrice (2**(-11)) 0
+    let state = emptyState (NonNegative 0.5, NonNegative (2**(-30))) :: SimpleCompositionState
+        price = (Positive (2**(-11)), NonNegative 0)
     in countQueries state price `shouldBe` 1024
 
   prop "returns a smaller budget for a random epsilon" $
     \(QC.Positive (epsilon1 :: Epsilon)) (QC.Positive (epsilon2 :: Epsilon)) ->
       let initialEpsilon = max epsilon1 epsilon2
           queryEpsilon = min epsilon1 epsilon2
-          budget = mkBudget initialEpsilon 1
-          price = mkPrice queryEpsilon 1
+          budget = (NonNegative initialEpsilon, NonNegative 1)
+          price = (Positive queryEpsilon, NonNegative 1)
           state = emptyState budget
           newBudget = subtractBudget state price
           Right (SimpleCompositionState newEpsilon _) = newBudget
@@ -49,15 +50,9 @@ spec = do
     \(QC.Positive (delta1 :: Delta)) (QC.Positive (delta2 :: Delta)) ->
       let initialDelta = max delta1 delta2
           queryDelta = min delta1 delta2
-          budget = mkBudget 1 initialDelta
-          price = mkPrice 1 queryDelta
+          budget = (NonNegative 1, NonNegative initialDelta)
+          price = (Positive 1, NonNegative queryDelta)
           state = emptyState budget
           newState = subtractBudget state price
           Right (SimpleCompositionState _ newDelta) = newState
       in value newDelta < initialDelta
-
-mkBudget :: Epsilon -> Delta -> Budget SimpleCompositionState
-mkBudget epsilon delta =
-  case (nonNegative epsilon, nonNegative delta) of
-    (Right epsilon, Right delta) -> (epsilon, delta)
-    _ -> error "Budget does not correspond to the requirements"

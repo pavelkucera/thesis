@@ -4,11 +4,6 @@ import Epsalon.Internal.Types
 import Epsalon.Internal.Composition.PrivacyFilter
 import Epsalon.Internal.ValueGuard
 
-mkPrice :: Epsilon -> Delta -> QueryPrice
-mkPrice epsilon delta =
-  case (positive epsilon, nonNegative delta) of
-    (Right epsilon, Right delta) -> (epsilon, delta)
-
 countQueries :: PrivacyFilter a => a -> QueryPrice -> Int
 countQueries initialState price = loop 0 (Right initialState)
  where

@@ -2,16 +2,7 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Epsalon.Internal.ValueGuard (
-  Positive,
-  NonPositive,
-  Negative,
-  NonNegative,
-  positive,
-  nonNegative,
-  value,
-  zero
-) where
+module Epsalon.Internal.ValueGuard where
 
 -- | Wrapper for positive values. Use 'positive' to construct a value of this type.
 newtype Positive a = Positive a
