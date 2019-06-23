@@ -1,7 +1,7 @@
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Epsalon.Sql.Builder where
+module Epsalon.Internal.Sql.Builder where
 
 import Data.Text (Text)
 import Data.Text.Encoding (encodeUtf8)

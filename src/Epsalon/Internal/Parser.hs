@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Epsalon.Parser where
+module Epsalon.Internal.Parser where
 
 import Data.Void (Void)
 import Data.Text (Text, pack)
@@ -10,7 +10,7 @@ import Text.Megaparsec.Error (ParseErrorBundle)
 import Text.Megaparsec.Char (alphaNumChar, char, letterChar, space1, string')
 import qualified Text.Megaparsec.Char.Lexer as L
 
-import Epsalon.Query.Ast
+import Epsalon.Internal.Query.Ast
 
 type Parser = Parsec Void String
 

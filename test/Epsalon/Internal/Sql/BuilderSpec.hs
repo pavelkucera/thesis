@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Epsalon.Sql.BuilderSpec (spec) where
+module Epsalon.Internal.Sql.BuilderSpec (spec) where
 
 import Data.Text (Text)
 import qualified Data.Text as T (concat)
@@ -9,7 +9,7 @@ import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.QuickCheck.Instances.Text()
 
-import Epsalon.Sql.Builder
+import Epsalon.Internal.Sql.Builder
 
 spec :: Spec
 spec = do

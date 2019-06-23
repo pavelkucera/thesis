@@ -1,10 +1,10 @@
-module Epsalon.Sql.Runner where
+module Epsalon.Internal.Sql.Runner where
 
 import Control.Monad.IO.Class (liftIO, MonadIO)
 import Data.Scientific
 import Database.PostgreSQL.Simple (Connection, query, fold, Only(..), FromRow)
 
-import Epsalon.Sql.Builder
+import Epsalon.Internal.Sql.Builder
 
 -- | Helper to execute a numeric query. Turns NULL values into 0.
 executeSql :: (MonadIO m) => Connection -> SqlPart -> m Double

@@ -1,8 +1,8 @@
-module Epsalon.Composition.Helpers where
+module Epsalon.Internal.Composition.Helpers where
 
-import Epsalon.Types
-import Epsalon.Composition.PrivacyFilter
-import Epsalon.ValueGuard
+import Epsalon.Internal.Types
+import Epsalon.Internal.Composition.PrivacyFilter
+import Epsalon.Internal.ValueGuard
 
 mkPrice :: Epsilon -> Delta -> QueryPrice
 mkPrice epsilon delta =

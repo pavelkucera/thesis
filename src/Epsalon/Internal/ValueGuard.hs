@@ -2,7 +2,7 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Epsalon.ValueGuard (
+module Epsalon.Internal.ValueGuard (
   Positive,
   NonPositive,
   Negative,

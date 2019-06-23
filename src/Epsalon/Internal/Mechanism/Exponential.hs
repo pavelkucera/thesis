@@ -1,17 +1,17 @@
 {-# LANGUAGE GADTs #-}
 
-module Epsalon.Mechanism.Exponential where
+module Epsalon.Internal.Mechanism.Exponential where
 
 import Control.Monad.IO.Class (MonadIO)
 import Data.Scientific (Scientific)
 import Database.PostgreSQL.Simple (Connection, Only(..))
 import System.Random (randomR, random, StdGen)
 
-import Epsalon.Query.Ast
-import Epsalon.Sql.Generator
-import Epsalon.Sql.Runner
-import Epsalon.Types (Epsilon)
-import Epsalon.ValueGuard (Positive, value)
+import Epsalon.Internal.Query.Ast
+import Epsalon.Internal.Sql.Generator
+import Epsalon.Internal.Sql.Runner
+import Epsalon.Internal.Types (Epsilon)
+import Epsalon.Internal.ValueGuard (Positive, value)
 
 -- | Runs a query using the exponential mechanism. Values are streamed into and aggregated
 -- in memory. Uses reservoir-sampling to avoid loading all values into memory at once.

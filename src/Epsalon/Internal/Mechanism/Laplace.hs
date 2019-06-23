@@ -1,16 +1,16 @@
 {-# LANGUAGE GADTs #-}
 
-module Epsalon.Mechanism.Laplace where
+module Epsalon.Internal.Mechanism.Laplace where
 
 import Control.Monad.IO.Class (MonadIO)
 import Database.PostgreSQL.Simple (Connection)
 import System.Random (StdGen, random)
 
-import Epsalon.Query.Ast
-import Epsalon.Sql.Generator (emitLaplace)
-import Epsalon.Sql.Runner (executeSql)
-import Epsalon.Types
-import Epsalon.ValueGuard
+import Epsalon.Internal.Query.Ast
+import Epsalon.Internal.Sql.Generator (emitLaplace)
+import Epsalon.Internal.Sql.Runner (executeSql)
+import Epsalon.Internal.Types
+import Epsalon.Internal.ValueGuard
 
 -- | Runs a DatabaseQuery using the Laplace mechanism.
 laplace :: (MonadIO m)

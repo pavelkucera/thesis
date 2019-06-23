@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Epsalon.Sql.GeneratorSpec (spec) where
+module Epsalon.Internal.Sql.GeneratorSpec (spec) where
 
 import Data.Text (Text)
 import Database.PostgreSQL.Simple.Types (Identifier(..))
@@ -9,9 +9,9 @@ import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.QuickCheck.Instances.Text()
 
-import Epsalon.Query.Ast
-import Epsalon.Sql.Generator
-import Epsalon.Sql.Builder (SqlPart(..), Parameter(..))
+import Epsalon.Internal.Query.Ast
+import Epsalon.Internal.Sql.Generator
+import Epsalon.Internal.Sql.Builder (SqlPart(..), Parameter(..))
 
 testExpr :: Expr
 testExpr = Literal (Value ("test" :: String))

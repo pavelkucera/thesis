@@ -1,13 +1,13 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Epsalon.Composition.AdaptiveSpec (spec) where
+module Epsalon.Internal.Composition.AdaptiveSpec (spec) where
 
 import Test.Hspec
-import Epsalon.Composition.PrivacyFilter
-import Epsalon.Composition.Adaptive
-import Epsalon.Composition.Helpers
-import Epsalon.Types
-import Epsalon.ValueGuard
+import Epsalon.Internal.Composition.PrivacyFilter
+import Epsalon.Internal.Composition.Adaptive
+import Epsalon.Internal.Composition.Helpers
+import Epsalon.Internal.Types
+import Epsalon.Internal.ValueGuard
 
 spec :: Spec
 spec = do

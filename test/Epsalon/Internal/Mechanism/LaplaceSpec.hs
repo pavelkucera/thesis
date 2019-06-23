@@ -1,9 +1,9 @@
-module Epsalon.Mechanism.LaplaceSpec (spec) where
+module Epsalon.Internal.Mechanism.LaplaceSpec (spec) where
 
 import System.Random (mkStdGen)
 import Test.Hspec
 import Test.Hspec.QuickCheck
-import Epsalon.Mechanism.Laplace
+import Epsalon.Internal.Mechanism.Laplace
 
 spec :: Spec
 spec = do

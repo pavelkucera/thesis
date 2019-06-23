@@ -9,14 +9,14 @@ import Database.PostgreSQL.Simple (Connection)
 import System.Random (StdGen)
 import Text.Megaparsec.Error (ParseErrorBundle)
 
-import Epsalon.Parser (parseQuery)
-import Epsalon.Composition.Adaptive as X (AdaptiveCompositionState(..))
-import Epsalon.Composition.PrivacyFilter as X (BudgetDepleted, PrivacyFilter(..), QueryPrice)
-import Epsalon.Composition.Simple as X (SimpleCompositionState(..))
-import Epsalon.Query.Query
-import Epsalon.Query.Runner
-import Epsalon.Types as X (Epsilon, Delta)
-import Epsalon.ValueGuard as X (Positive, NonNegative, positive, nonNegative, value, zero)
+import Epsalon.Internal.Parser (parseQuery)
+import Epsalon.Internal.Composition.Adaptive as X (AdaptiveCompositionState(..))
+import Epsalon.Internal.Composition.PrivacyFilter as X (BudgetDepleted, PrivacyFilter(..), QueryPrice)
+import Epsalon.Internal.Composition.Simple as X (SimpleCompositionState(..))
+import Epsalon.Internal.Query.Query
+import Epsalon.Internal.Query.Runner
+import Epsalon.Internal.Types as X (Epsilon, Delta)
+import Epsalon.Internal.ValueGuard as X (Positive, NonNegative, positive, nonNegative, value, zero)
 
 runString :: (MonadIO m, PrivacyFilter p)
           => StdGen

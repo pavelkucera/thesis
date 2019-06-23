@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module Epsalon.ParserSpec (spec) where
+module Epsalon.Internal.ParserSpec (spec) where
 
 import Data.Scientific (Scientific)
 import Text.Megaparsec (Parsec, ParseErrorBundle, Stream, eof, runParser, runParser')
@@ -9,8 +9,8 @@ import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.Hspec.Megaparsec (initialState, shouldParse, succeedsLeaving)
 
-import Epsalon.Parser
-import Epsalon.Query.Ast
+import Epsalon.Internal.Parser
+import Epsalon.Internal.Query.Ast
 
 spec :: Spec
 spec = do

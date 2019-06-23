@@ -1,10 +1,10 @@
 {-# LANGUAGE TypeFamilies #-}
 
-module Epsalon.Composition.Simple where
+module Epsalon.Internal.Composition.Simple where
 
-import Epsalon.Composition.PrivacyFilter (PrivacyFilter(..), BudgetDepleted(..))
-import Epsalon.ValueGuard (NonNegative, nonNegative, value)
-import Epsalon.Types
+import Epsalon.Internal.Composition.PrivacyFilter (PrivacyFilter(..), BudgetDepleted(..))
+import Epsalon.Internal.ValueGuard (NonNegative, nonNegative, value)
+import Epsalon.Internal.Types
 
 data SimpleCompositionState =
   SimpleCompositionState (NonNegative Epsilon) (NonNegative Delta)

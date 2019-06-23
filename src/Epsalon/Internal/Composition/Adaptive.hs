@@ -1,11 +1,11 @@
 {-# LANGUAGE TypeFamilies #-}
 
-module Epsalon.Composition.Adaptive where
+module Epsalon.Internal.Composition.Adaptive where
 
 import Data.Bifunctor (bimap)
-import Epsalon.Composition.PrivacyFilter (PrivacyFilter(..), Budget, BudgetDepleted(..))
-import Epsalon.ValueGuard (Positive, value)
-import Epsalon.Types
+import Epsalon.Internal.Composition.PrivacyFilter (PrivacyFilter(..), Budget, BudgetDepleted(..))
+import Epsalon.Internal.ValueGuard (Positive, value)
+import Epsalon.Internal.Types
 
 data AdaptiveCompositionState =
   AdaptiveCompositionState {

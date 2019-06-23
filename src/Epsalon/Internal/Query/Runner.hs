@@ -1,17 +1,17 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Epsalon.Query.Runner where
+module Epsalon.Internal.Query.Runner where
 
 import Control.Monad.IO.Class (MonadIO)
 import Database.PostgreSQL.Simple (Connection)
 import System.Random (StdGen)
 
-import Epsalon.Composition.PrivacyFilter
-import Epsalon.Mechanism.Exponential
-import Epsalon.Mechanism.Laplace
-import Epsalon.Query.Ast
-import Epsalon.Query.Query
-import Epsalon.ValueGuard
+import Epsalon.Internal.Composition.PrivacyFilter
+import Epsalon.Internal.Mechanism.Exponential
+import Epsalon.Internal.Mechanism.Laplace
+import Epsalon.Internal.Query.Ast
+import Epsalon.Internal.Query.Query
+import Epsalon.Internal.ValueGuard
 
 -- | Runs a query against a database and returns a differentially private result.
 run :: (MonadIO m, PrivacyFilter p)

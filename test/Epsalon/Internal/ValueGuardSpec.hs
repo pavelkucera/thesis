@@ -1,11 +1,11 @@
-module Epsalon.ValueGuardSpec (spec) where
+module Epsalon.Internal.ValueGuardSpec (spec) where
 
 import Data.Either (isLeft, isRight)
 import Test.Hspec
 import Test.Hspec.QuickCheck
 import qualified Test.QuickCheck as QC
-import Epsalon.ValueGuard
-import Epsalon.Types
+import Epsalon.Internal.ValueGuard
+import Epsalon.Internal.Types
 
 spec :: Spec
 spec = do

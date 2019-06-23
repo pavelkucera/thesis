@@ -1,11 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Epsalon.Sql.Generator where
+module Epsalon.Internal.Sql.Generator where
 
 import Data.Text (Text)
 import Data.List (intersperse)
-import Epsalon.Query.Ast
-import Epsalon.Sql.Builder
+import Epsalon.Internal.Query.Ast
+import Epsalon.Internal.Sql.Builder
 
 -- | Clips expression E into range [-1, 1] by using LEAST(GREATEST(E, -1), 1).
 -- Necessary to limit function sensitivity.

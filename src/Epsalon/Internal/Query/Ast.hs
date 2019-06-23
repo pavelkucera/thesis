@@ -1,6 +1,6 @@
 {-# LANGUAGE GADTs #-}
 
-module Epsalon.Query.Ast where
+module Epsalon.Internal.Query.Ast where
 
 import Data.Text (Text)
 import Data.Typeable (Typeable, cast)

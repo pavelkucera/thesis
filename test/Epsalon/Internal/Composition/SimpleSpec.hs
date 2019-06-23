@@ -1,15 +1,15 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Epsalon.Composition.SimpleSpec (spec) where
+module Epsalon.Internal.Composition.SimpleSpec (spec) where
 
 import Test.Hspec
 import Test.Hspec.QuickCheck
 import qualified Test.QuickCheck as QC
-import Epsalon.Composition.PrivacyFilter
-import Epsalon.Composition.Simple
-import Epsalon.Types
-import Epsalon.ValueGuard
-import Epsalon.Composition.Helpers
+import Epsalon.Internal.Composition.PrivacyFilter
+import Epsalon.Internal.Composition.Simple
+import Epsalon.Internal.Types
+import Epsalon.Internal.ValueGuard
+import Epsalon.Internal.Composition.Helpers
 
 spec :: Spec
 spec = do

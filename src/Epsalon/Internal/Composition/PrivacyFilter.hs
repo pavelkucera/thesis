@@ -1,9 +1,9 @@
 {-# LANGUAGE TypeFamilies #-}
 
-module Epsalon.Composition.PrivacyFilter where
+module Epsalon.Internal.Composition.PrivacyFilter where
 
-import Epsalon.Types
-import Epsalon.ValueGuard
+import Epsalon.Internal.Types
+import Epsalon.Internal.ValueGuard
 
 data BudgetDepleted = BudgetDepleted
   deriving (Eq, Show)
