@@ -1,8 +1,6 @@
 module Epsalon.Internal.Composition.Helpers where
 
-import Epsalon.Internal.Types
 import Epsalon.Internal.Composition.PrivacyFilter
-import Epsalon.Internal.ValueGuard
 
 countQueries :: PrivacyFilter a => a -> QueryPrice -> Int
 countQueries initialState price = loop 0 (Right initialState)
