@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Epsalon.Internal.Mechanism.Laplace where
 
 import Control.Monad.IO.Class (MonadIO)
