@@ -63,14 +63,14 @@ data Expr =
   | Star
   deriving (Eq, Show)
 
--- Aggregations computed using the Laplace mechanism
+-- | Aggregations computed using the Laplace mechanism
 data DatabaseAggregation =
    Sum
  | Average
  | Count
  deriving (Eq, Show)
 
--- Aggregations computed using the exponential mechanism
+-- | Aggregations computed using the exponential mechanism
 data StreamAggregation =
    Median
  | Min
