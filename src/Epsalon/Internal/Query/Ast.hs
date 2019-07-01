@@ -6,6 +6,9 @@ import Data.Text (Text)
 import Data.Typeable (Typeable, cast)
 import Database.PostgreSQL.Simple.ToField (ToField)
 
+import Epsalon.Internal.Types
+import Epsalon.Internal.ValueGuard
+
 type Identifier = Text
 
 -- | Wrapper around user-supplied parameters
@@ -90,3 +93,9 @@ data AggregationAst =
     selectWhere :: Maybe Expr
   }
   deriving (Eq, Show)
+
+-- | Differentially private query.
+data Query = Query {
+    queryEpsilon :: Positive Epsilon,
+    queryAst :: Aggregation
+  }

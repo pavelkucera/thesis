@@ -15,7 +15,6 @@ import Epsalon.Internal.Composition.Adaptive as X (AdaptiveCompositionState(..))
 import Epsalon.Internal.Composition.PrivacyFilter as X (BudgetDepleted, PrivacyFilter(..), QueryPrice)
 import Epsalon.Internal.Composition.Simple as X (SimpleCompositionState(..))
 import Epsalon.Internal.Query.Ast as X
-import Epsalon.Internal.Query.Query as X
 import Epsalon.Internal.Query.Runner
 import Epsalon.Internal.Types as X (Epsilon, Delta)
 import Epsalon.Internal.ValueGuard as X (Positive, NonNegative, positive, nonNegative, value, zero)
