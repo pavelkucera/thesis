@@ -10,7 +10,6 @@ import Epsalon.Internal.Composition.PrivacyFilter
 import Epsalon.Internal.Mechanism.Exponential
 import Epsalon.Internal.Mechanism.Laplace
 import Epsalon.Internal.Query.Ast
-import Epsalon.Internal.Query.Query
 import Epsalon.Internal.ValueGuard
 
 -- | Runs a query against a database and returns a differentially private result.
