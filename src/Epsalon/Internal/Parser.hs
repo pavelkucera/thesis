@@ -79,8 +79,8 @@ expression = makeExprParser term [
     InfixN (BinaryOp EqualOp <$ symbol "="),
     InfixN (BinaryOp GreaterOrEqualOp <$ symbol ">="),
     InfixN (BinaryOp GreaterOp <$ symbol ">"),
-    InfixN (BinaryOp LessOp <$ symbol "<="),
-    InfixN (BinaryOp LessOrEqualOp <$ symbol "<")
+    InfixN (BinaryOp LessOrEqualOp <$ symbol "<="),
+    InfixN (BinaryOp LessOp <$ symbol "<")
   ],
   [InfixL (BinaryOp AndOp <$ word' "AND")],
   [InfixL (BinaryOp OrOp <$ word' "OR")]

@@ -83,7 +83,7 @@ emitExpr (BinaryOp identifier left right) =
   opName GreaterOp = ">"
   opName GreaterOrEqualOp = ">="
   opName LessOp = "<"
-  opName LessOrEqualOp = "*"
+  opName LessOrEqualOp = "<="
   opName AndOp = "AND"
   opName OrOp = "OR"
 emitExpr (FunctionCall fn) =
