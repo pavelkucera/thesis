@@ -1,4 +1,3 @@
 .stack-work
 *.hi
 *.o
-*.cabal
